@@ -1,0 +1,488 @@
+/* ===============================================
+   SERVICES STYLES
+   =============================================== */
+
+.services-main,
+.services-container {
+  animation: fadeIn 0.5s ease-in;
+}
+
+/* New Header Styles */
+.services-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.services-header h2 {
+  font-size: 2.5rem;
+  color: #667eea;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.services-header p {
+  font-size: 1.2rem;
+  color: #666;
+  opacity: 0.8;
+}
+
+/* Header Section */
+.services-container .header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.services-container .header h1 {
+  font-size: 2.5rem;
+  color: #667eea;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.services-container .header p {
+  font-size: 1.1rem;
+  color: #666;
+  margin: 0;
+}
+
+/* Services Grid */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.service-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  position: relative;
+}
+
+.service-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.service-image {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  position: relative;
+}
+
+.service-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.service-card:hover .service-image img {
+  transform: scale(1.05);
+}
+
+.service-content {
+  padding: 1.5rem;
+}
+
+.service-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.service-header h3 {
+  color: #2d3748;
+  font-size: 1.2rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.service-type {
+  background: #667eea;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  white-space: nowrap;
+  margin-left: 1rem;
+}
+
+.service-content .district {
+  color: #667eea;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.service-content .description {
+  color: #4a5568;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.service-content .address {
+  color: #718096;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+/* Service Details */
+.service-details {
+  margin-bottom: 1.5rem;
+}
+
+.service-details .detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0;
+}
+
+.service-details .detail .label {
+  font-weight: 500;
+  color: #4a5568;
+  font-size: 0.85rem;
+}
+
+.service-details .detail .value {
+  font-weight: 500;
+  color: #2d3748;
+  font-size: 0.85rem;
+}
+
+/* Contact Info */
+.contact-info {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+}
+
+.contact {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.contact:last-child {
+  margin-bottom: 0;
+}
+
+.contact .label {
+  font-size: 1rem;
+  width: 20px;
+  text-align: center;
+}
+
+.contact-link {
+  color: #667eea;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.contact-link:hover {
+  color: #5a67d8;
+  text-decoration: underline;
+}
+
+/* Service Actions */
+.service-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.map-btn,
+.delete-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.map-btn {
+  background: #48bb78;
+  color: white;
+}
+
+.map-btn:hover {
+  background: #38a169;
+  transform: translateY(-2px);
+}
+
+.delete-btn {
+  background: #fed7d7;
+  color: #e53e3e;
+}
+
+.delete-btn:hover {
+  background: #feb2b2;
+  transform: translateY(-2px);
+}
+
+/* Inactive Badge */
+.inactive-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(237, 137, 54, 0.9);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* ===============================================
+   CREATE SERVICE FORM STYLES
+   =============================================== */
+
+.create-service-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  animation: fadeIn 0.5s ease-in;
+}
+
+.create-service-form {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+/* Checkbox Group */
+.checkbox-group {
+  margin-top: 1rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-weight: 500;
+  color: #4a5568;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+.checkmark {
+  position: relative;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkmark {
+  background: #667eea;
+  border-color: #667eea;
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkmark:after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Service Type Icons in Select */
+.create-service-form select option {
+  padding: 0.5rem;
+}
+
+/* Enhanced Form Sections */
+.create-service-form .form-section {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.6) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.create-service-form .form-section:hover {
+  border-color: rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+}
+
+/* Rating Input Styling */
+.create-service-form input[type="number"][name="rating"] {
+  background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+}
+
+/* Website Input Styling */
+.create-service-form input[type="url"] {
+  background: linear-gradient(135deg, #fff 0%, #f0f8ff 100%);
+}
+
+/* Enhanced Submit Button */
+.create-service-form .submit-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.create-service-form .submit-btn:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+.create-service-form .submit-btn:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.create-service-form .submit-btn:hover:before {
+  left: 100%;
+}
+
+/* ===============================================
+   RESPONSIVE DESIGN
+   =============================================== */
+
+@media (max-width: 768px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .service-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .service-type {
+    margin-left: 0;
+    align-self: flex-start;
+  }
+  
+  .contact-info {
+    padding: 0.75rem;
+  }
+  
+  .service-actions {
+    flex-direction: column;
+  }
+  
+  .map-btn,
+  .delete-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .services-container .header h1 {
+    font-size: 2rem;
+  }
+  
+  .service-card {
+    margin: 0 -1rem;
+    border-radius: 12px;
+  }
+  
+  .service-image {
+    height: 150px;
+  }
+  
+  .contact {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .contact .label {
+    width: auto;
+  }
+}
+
+/* ===============================================
+   SERVICE TYPE SPECIFIC STYLES
+   =============================================== */
+
+.service-card[data-type="hotel"] .service-type {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.service-card[data-type="restaurant"] .service-type {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.service-card[data-type="transport"] .service-type {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.service-card[data-type="guide"] .service-type {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.service-card[data-type="shopping"] .service-type {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.service-card[data-type="hospital"] .service-type {
+  background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+}
+
+.service-card[data-type="atm"] .service-type {
+  background: linear-gradient(135deg, #48dbfb 0%, #0abde3 100%);
+}
+
+.service-card[data-type="fuel"] .service-type {
+  background: linear-gradient(135deg, #ff9ff3 0%, #f368e0 100%);
+}
+
+/* Price Range Styling */
+.price-range-1 .detail .value { color: #48bb78; }
+.price-range-2 .detail .value { color: #ed8936; }
+.price-range-3 .detail .value { color: #e53e3e; }
+.price-range-4 .detail .value { color: #9f7aea; }
+
+/* Rating Stars Animation */
+.service-details .value:has-text('⭐') {
+  animation: sparkle 2s infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}

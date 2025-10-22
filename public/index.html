@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#667eea" />
+    <meta name="description" content="GI Yatra - Explore Karnataka's geographical indication locations and plan amazing trips with AI-powered scheduling" />
+    <meta name="keywords" content="Karnataka, travel, GI products, GI locations, trip planning, India tourism, geographical indications" />
+    <meta name="author" content="GI Yatra Team" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="GI Yatra - Karnataka GI Explorer" />
+    <meta property="og:description" content="Discover Karnataka's geographical indication locations and authentic GI products with smart AI scheduling" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="%PUBLIC_URL%/og-image.jpg" />
+    
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="GI Yatra - Karnataka GI Explorer" />
+    <meta name="twitter:description" content="Discover Karnataka's geographical indication locations and authentic GI products" />
+    
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    
+    <!-- Preload critical fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    
+    <title>🏛️ GI Yatra - Karnataka GI Explorer</title>
+    
+    <style>
+      /* Loading screen styles */
+      #loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        color: white;
+        font-family: 'Inter', sans-serif;
+      }
+      
+      #loading-screen .logo {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        animation: pulse 2s infinite;
+      }
+      
+      #loading-screen .title {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+      
+      #loading-screen .subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-bottom: 3rem;
+      }
+      
+      #loading-screen .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+      }
+      
+      /* Hide loading screen when React loads */
+      body.loaded #loading-screen {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+      <div class="logo">🏛️</div>
+      <div class="title">GI Yatra</div>
+      <div class="subtitle">Discover Karnataka's Geographical Indications</div>
+      <div class="spinner"></div>
+    </div>
+    
+    <div id="root"></div>
+    
+    <script>
+      // Hide loading screen when page loads
+      window.addEventListener('load', function() {
+        document.body.classList.add('loaded');
+      });
+      
+      // Fallback: Hide loading screen after 5 seconds
+      setTimeout(function() {
+        document.body.classList.add('loaded');
+      }, 5000);
+    </script>
+  </body>
+</html>
