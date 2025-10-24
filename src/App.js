@@ -44,8 +44,8 @@ function AppContent() {
       <header className="app-header">
         <div className="header-content">
           <div className="logo">
-            <h1>🏛️ GI Yatra</h1>
-            <p>Discover Karnataka's Geographical Indications</p>
+            <h1>🗺️ GI Yatra</h1>
+            <p>Plan beautiful trips across Karnataka's GI destinations</p>
           </div>
           <nav className="main-navigation">
             {navigationItems.map(item => (
@@ -87,22 +87,21 @@ function AppContent() {
         </div>
       </main>
 
-      {/* Marquee Section */}
+      {/* Promo Section */}
       <div style={{
-        background: 'linear-gradient(90deg, #D4A574 0%, #8B6F47 50%, #D4A574 100%)',
-        padding: '2rem 0',
+        background: 'linear-gradient(90deg, #0ea5e9 0%, #6366f1 100%)',
+        padding: '1rem 0',
         overflow: 'hidden',
-        borderTop: '2px solid #8B4513',
-        borderBottom: '2px solid #8B4513'
+        borderTop: '1px solid rgba(255,255,255,0.2)',
+        borderBottom: '1px solid rgba(255,255,255,0.2)'
       }}>
         <marquee style={{
-          color: '#4A3728',
-          fontSize: '2.5rem',
+          color: 'white',
+          fontSize: '1.15rem',
           fontWeight: 700,
-          fontFamily: 'Georgia, serif',
-          letterSpacing: '2px'
+          letterSpacing: '1px'
         }}>
-          ⭐ Elevate, Gok Seed Fund - Supporting Innovation & Growth ⭐
+          ✨ Plan your perfect Karnataka itinerary — smart routes, real travel times, beautiful trips.
         </marquee>
       </div>
 

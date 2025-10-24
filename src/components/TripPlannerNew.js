@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import SafeImage from './SafeImage';
+import Modal from './Modal';
 import {
   getAllGILocations,
   getAllDistricts
@@ -8,9 +8,10 @@ import {
   saveLocalTrip,
   updateLocalTrip,
   markLocationAsVisited,
-  getTripProgress,
-  generateLocalSchedule
+  getTripProgress
 } from '../services/localTripStorage';
+import { generateSmartSchedule, calculateTripStats } from '../services/smartScheduleGenerator';
+import { formatDuration, formatDistance } from '../services/googleMapsService';
 import TripMap from './TripMap';
 
 function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
@@ -36,6 +37,10 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
   const [createdTrip, setCreatedTrip] = useState(null);
   const [tripProgress, setTripProgress] = useState({ visited: 0, total: 0, percentage: 0 });
   const [showMap, setShowMap] = useState(false);
+  const [modal, setModal] = useState({ open: false, title: '', content: null, actions: [] });
+
+  const openModal = (title, content, actions = []) => setModal({ open: true, title, content, actions });
+  const closeModal = () => setModal(m => ({ ...m, open: false }));
 
   const loadTripData = useCallback(async () => {
     try {
@@ -134,7 +139,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
   const handleStep1Submit = (e) => {
     e.preventDefault();
     if (!tripData.title.trim() || tripData.num_days < 1) {
-      alert('Please fill in all required fields');
+      openModal('Missing details', (<div>Please fill in the trip title and number of days.</div>));
       return;
     }
     setCurrentStep(2);
@@ -142,7 +147,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
 
   const handleGenerateSchedule = async () => {
     if (selectedLocations.length === 0) {
-      alert('Please select at least one location');
+      openModal('Select locations', (<div>Please select at least one location to generate an itinerary.</div>));
       return;
     }
 
@@ -154,20 +159,52 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
         id: editingTrip?.id || `trip-${Date.now()}`
       };
 
-      // Generate schedule
-      const generatedSchedule = generateLocalSchedule(tripWithLocations);
+      console.log('🚀 Generating smart schedule with real travel times...');
+      const generatedSchedule = await generateSmartSchedule(tripWithLocations);
 
-      // Save trip with schedule
-      const savedTrip = editingTrip 
-        ? updateLocalTrip(editingTrip.id, { ...tripWithLocations, schedule: generatedSchedule })
-        : saveLocalTrip({ ...tripWithLocations, schedule: generatedSchedule });
+      const proceedToSave = () => {
+        const savedTrip = editingTrip 
+          ? updateLocalTrip(editingTrip.id, { ...tripWithLocations, schedule: generatedSchedule })
+          : saveLocalTrip({ ...tripWithLocations, schedule: generatedSchedule });
 
-      setCreatedTrip(savedTrip);
-      setSchedule(generatedSchedule);
-      setCurrentStep(4);
+        setCreatedTrip(savedTrip);
+        setSchedule(generatedSchedule);
+        setCurrentStep(4);
+        closeModal();
+      };
+
+      if (!generatedSchedule.summary.isFeasible) {
+        setLoading(false);
+        openModal(
+          'Partial schedule – some locations won’t fit',
+          (
+            <div>
+              <p>
+                Covered: <strong>{generatedSchedule.summary.coveredLocations}</strong> / {selectedLocations.length} locations
+              </p>
+              {generatedSchedule.summary.uncoveredLocations?.length > 0 && (
+                <p style={{ marginTop: 8 }}>
+                  Not scheduled: {generatedSchedule.summary.uncoveredLocations.join(', ')}
+                </p>
+              )}
+              <p style={{ marginTop: 8, color: '#64748b' }}>
+                You can proceed with this partial plan or go back to increase days, remove locations,
+                or adjust your daily times.
+              </p>
+            </div>
+          ),
+          [
+            { label: 'Go back', onClick: closeModal },
+            { label: 'Proceed', variant: 'primary', onClick: proceedToSave }
+          ]
+        );
+        return;
+      }
+
+      proceedToSave();
     } catch (error) {
       console.error('Error generating schedule:', error);
-      alert('Error generating schedule. Please try again.');
+      openModal('Something went wrong', (<div>Error generating schedule. Please try again.</div>));
     } finally {
       setLoading(false);
     }
@@ -175,7 +212,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
 
   const handleUseMyLocation = () => {
     if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your browser');
+      openModal('Location not supported', (<div>Your browser does not support geolocation. Please enter a starting location.</div>));
       return;
     }
 
@@ -193,7 +230,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
       },
       (error) => {
         console.error('Error getting location:', error);
-        alert('Could not get your location. Please enter manually.');
+        openModal('Could not get your location', (<div>Please enter your starting location manually.</div>));
         setLocating(false);
       }
     );
@@ -221,6 +258,14 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
       minHeight: '100vh',
       padding: '2rem 1.5rem'
     }}>
+      <Modal
+        isOpen={modal.open}
+        title={modal.title}
+        onClose={closeModal}
+        actions={modal.actions}
+      >
+        {modal.content}
+      </Modal>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
@@ -745,10 +790,69 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
           {/* Step 4: Schedule */}
           {currentStep === 4 && schedule && (
             <div>
+              {/* Schedule Header with Stats */}
               <div style={{ marginBottom: '2rem' }}>
-                <h2 style={{ margin: '0 0 1rem', fontSize: '1.75rem', fontWeight: 700, color: '#1f2937' }}>
-                  Your Itinerary
+                <h2 style={{ margin: '0 0 0.5rem', fontSize: '1.75rem', fontWeight: 700, color: '#1f2937' }}>
+                  🗓️ Your Smart Itinerary
                 </h2>
+                
+                {/* Feasibility Alert */}
+                {schedule.summary && (
+                  <div style={{
+                    padding: '1rem',
+                    background: schedule.summary.isFeasible ? '#d1fae5' : '#fee2e2',
+                    borderRadius: 12,
+                    marginBottom: '1rem',
+                    border: `2px solid ${schedule.summary.isFeasible ? '#10b981' : '#ef4444'}`
+                  }}>
+                    <div style={{ fontWeight: 700, marginBottom: 4, color: schedule.summary.isFeasible ? '#065f46' : '#991b1b' }}>
+                      {schedule.summary.isFeasible ? '✅ All locations scheduled successfully!' : '⚠️ Partial Schedule - Not all locations could fit'}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: schedule.summary.isFeasible ? '#047857' : '#dc2626' }}>
+                      Covered: {schedule.summary.coveredLocations} / {schedule.summary.totalLocations} locations
+                      {!schedule.summary.isFeasible && schedule.summary.uncoveredLocations.length > 0 && (
+                        <div style={{ marginTop: 4 }}>
+                          Not scheduled: {schedule.summary.uncoveredLocations.join(', ')}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Trip Statistics */}
+                {(() => {
+                  const stats = calculateTripStats(schedule);
+                  return stats && (
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                      gap: 12,
+                      marginBottom: '1rem'
+                    }}>
+                      <div style={{ background: '#f0f9ff', padding: '1rem', borderRadius: 12, textAlign: 'center' }}>
+                        <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0284c7' }}>{stats.totalLocations}</div>
+                        <div style={{ fontSize: '0.85rem', color: '#0369a1' }}>Locations</div>
+                      </div>
+                      <div style={{ background: '#fef3c7', padding: '1rem', borderRadius: 12, textAlign: 'center' }}>
+                        <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#d97706' }}>{stats.totalDistance} km</div>
+                        <div style={{ fontSize: '0.85rem', color: '#b45309' }}>Total Travel</div>
+                      </div>
+                      <div style={{ background: '#ddd6fe', padding: '1rem', borderRadius: 12, textAlign: 'center' }}>
+                        <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#7c3aed' }}>{stats.totalTravelTime}</div>
+                        <div style={{ fontSize: '0.85rem', color: '#6d28d9' }}>Driving Time</div>
+                      </div>
+                      <div style={{ background: '#dcfce7', padding: '1rem', borderRadius: 12, textAlign: 'center' }}>
+                        <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#16a34a' }}>{stats.totalVisitTime}</div>
+                        <div style={{ fontSize: '0.85rem', color: '#15803d' }}>Visit Time</div>
+                      </div>
+                      <div style={{ background: '#fce7f3', padding: '1rem', borderRadius: 12, textAlign: 'center' }}>
+                        <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#db2777' }}>{stats.totalTime}</div>
+                        <div style={{ fontSize: '0.85rem', color: '#be185d' }}>Total Time</div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                   <button
                     onClick={() => setShowMap(!showMap)}
@@ -762,7 +866,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                       cursor: 'pointer'
                     }}
                   >
-                    {showMap ? 'Hide Map' : 'Show Map'}
+                    {showMap ? '📍 Hide Map' : '🗺️ Show Route on Map'}
                   </button>
                   {tripProgress.total > 0 && (
                     <div style={{ padding: '0.75rem 1.5rem', background: '#f3f4f6', borderRadius: 50, fontWeight: 600 }}>
@@ -778,55 +882,137 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                 </div>
               )}
 
+              {/* Day-by-Day Schedule */}
               {schedule.days && schedule.days.map((day, dayIdx) => (
-                <div key={dayIdx} style={{ marginBottom: '2rem', background: '#f9fafb', padding: '1.5rem', borderRadius: 16 }}>
-                  <h3 style={{ margin: '0 0 1rem', fontSize: '1.25rem', fontWeight: 700, color: '#1f2937' }}>
-                    Day {day.day_number} - {day.date}
-                  </h3>
-                  {day.items && day.items.filter(item => item.item_type === 'location').map((item, itemIdx) => (
-                    <div key={itemIdx} style={{
-                      background: '#fff',
-                      padding: '1rem',
-                      borderRadius: 12,
-                      marginBottom: 12,
-                      border: item.visited ? '2px solid #10b981' : '2px solid #e5e7eb'
-                    }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: 12 }}>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#1f2937', marginBottom: 4 }}>
-                            {item.location.name}
+                <div key={dayIdx} style={{ marginBottom: '2rem', background: '#f9fafb', padding: '1.5rem', borderRadius: 16, border: '2px solid #e5e7eb' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: '#1f2937' }}>
+                      📅 Day {day.day_number} - {day.date}
+                    </h3>
+                    {day.summary && (
+                      <div style={{ fontSize: '0.85rem', color: '#6b7280', fontWeight: 600 }}>
+                        {day.summary.locationsVisited} locations • {formatDuration(day.summary.totalTime)}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Timeline */}
+                  <div style={{ position: 'relative', paddingLeft: '2rem' }}>
+                    {/* Vertical line */}
+                    <div style={{
+                      position: 'absolute',
+                      left: '0.75rem',
+                      top: 0,
+                      bottom: 0,
+                      width: 2,
+                      background: '#d1d5db'
+                    }} />
+                    
+                    {day.items && day.items.map((item, itemIdx) => (
+                      <div key={itemIdx} style={{ position: 'relative', marginBottom: 16 }}>
+                        {/* Timeline dot */}
+                        <div style={{
+                          position: 'absolute',
+                          left: '-1.4rem',
+                          top: '0.5rem',
+                          width: 12,
+                          height: 12,
+                          borderRadius: '50%',
+                          background: item.item_type === 'location' ? '#667eea' : '#f59e0b',
+                          border: '2px solid #fff',
+                          boxShadow: '0 0 0 2px #d1d5db'
+                        }} />
+                        
+                        {item.item_type === 'travel' ? (
+                          // Travel segment
+                          <div style={{
+                            background: '#fffbeb',
+                            padding: '0.75rem 1rem',
+                            borderRadius: 12,
+                            borderLeft: '3px solid #f59e0b'
+                          }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <div>
+                                <div style={{ fontWeight: 600, color: '#92400e', fontSize: '0.9rem' }}>
+                                  🚗 {item.description}
+                                </div>
+                                <div style={{ fontSize: '0.85rem', color: '#78350f', marginTop: 4 }}>
+                                  {item.start_time} - {item.end_time} • {formatDistance(item.distance)} • {formatDuration(item.duration_minutes)}
+                                </div>
+                              </div>
+                            </div>
                           </div>
-                          <div style={{ fontSize: '0.9rem', color: '#6b7280', marginBottom: 8 }}>
-                            {item.start_time} - {item.end_time} ({item.duration_minutes} mins)
+                        ) : (
+                          // Location visit
+                          <div style={{
+                            background: '#fff',
+                            padding: '1rem',
+                            borderRadius: 12,
+                            border: item.visited ? '2px solid #10b981' : '2px solid #e5e7eb',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                          }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: 12 }}>
+                              <div style={{ flex: 1 }}>
+                                <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#1f2937', marginBottom: 4 }}>
+                                  📍 {item.location.name}
+                                </div>
+                                <div style={{ fontSize: '0.9rem', color: '#6b7280', marginBottom: 6 }}>
+                                  ⏰ {item.start_time} - {item.end_time} ({formatDuration(item.duration_minutes)})
+                                </div>
+                                <div style={{ fontSize: '0.85rem', color: '#667eea' }}>
+                                  📌 {item.location.district}
+                                </div>
+                              </div>
+                              {createdTrip && (
+                                <button
+                                  onClick={() => handleMarkVisited(dayIdx, itemIdx)}
+                                  disabled={item.visited}
+                                  style={{
+                                    padding: '8px 16px',
+                                    background: item.visited ? '#10b981' : '#e5e7eb',
+                                    color: item.visited ? '#fff' : '#374151',
+                                    borderRadius: 8,
+                                    border: 'none',
+                                    fontWeight: 600,
+                                    fontSize: '0.85rem',
+                                    cursor: item.visited ? 'default' : 'pointer',
+                                    whiteSpace: 'nowrap'
+                                  }}
+                                >
+                                  {item.visited ? '✓ Visited' : 'Mark Visited'}
+                                </button>
+                              )}
+                            </div>
                           </div>
-                          <div style={{ fontSize: '0.85rem', color: '#667eea' }}>
-                            {item.location.district}
-                          </div>
-                        </div>
-                        {createdTrip && (
-                          <button
-                            onClick={() => handleMarkVisited(dayIdx, itemIdx)}
-                            disabled={item.visited}
-                            style={{
-                              padding: '8px 16px',
-                              background: item.visited ? '#10b981' : '#e5e7eb',
-                              color: item.visited ? '#fff' : '#374151',
-                              borderRadius: 8,
-                              border: 'none',
-                              fontWeight: 600,
-                              fontSize: '0.85rem',
-                              cursor: item.visited ? 'default' : 'pointer'
-                            }}
-                          >
-                            {item.visited ? 'Visited' : 'Mark Visited'}
-                          </button>
                         )}
                       </div>
-                    </div>
-                  ))}
-                  <div style={{ marginTop: 16, padding: '1rem', background: '#fffbeb', borderRadius: 12 }}>
-                    <strong>Day Summary:</strong> {day.items ? day.items.filter(i => i.item_type === 'location').reduce((sum, i) => sum + i.duration_minutes, 0) : 0} mins visiting
+                    ))}
                   </div>
+                  
+                  {/* Day Summary */}
+                  {day.summary && (
+                    <div style={{ marginTop: 16, padding: '1rem', background: '#fff', borderRadius: 12, border: '2px solid #e5e7eb' }}>
+                      <div style={{ fontWeight: 700, marginBottom: 6, color: '#1f2937' }}>📊 Day Summary:</div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 8, fontSize: '0.85rem' }}>
+                        <div>
+                          <span style={{ color: '#6b7280' }}>Locations:</span>
+                          <span style={{ fontWeight: 700, marginLeft: 4, color: '#1f2937' }}>{day.summary.locationsVisited}</span>
+                        </div>
+                        <div>
+                          <span style={{ color: '#6b7280' }}>Travel:</span>
+                          <span style={{ fontWeight: 700, marginLeft: 4, color: '#f59e0b' }}>{formatDuration(day.summary.travelTime)}</span>
+                        </div>
+                        <div>
+                          <span style={{ color: '#6b7280' }}>Visiting:</span>
+                          <span style={{ fontWeight: 700, marginLeft: 4, color: '#667eea' }}>{formatDuration(day.summary.visitTime)}</span>
+                        </div>
+                        <div>
+                          <span style={{ color: '#6b7280' }}>Total:</span>
+                          <span style={{ fontWeight: 700, marginLeft: 4, color: '#10b981' }}>{formatDuration(day.summary.totalTime)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
 

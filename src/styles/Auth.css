@@ -1,11 +1,11 @@
-/* Auth Container - Heritage Theme */
+/* Auth Container - Travel Theme */
 .auth-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(135deg, #F5DEB3 0%, #D4A574 100%);
+  background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
   position: relative;
   overflow: hidden;
 }
@@ -17,7 +17,7 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(139, 69, 19, 0.08) 1px, transparent 1px);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
   background-size: 50px 50px;
   animation: backgroundMove 20s linear infinite;
 }
@@ -31,18 +31,18 @@
   }
 }
 
-/* Auth Card - Heritage Theme */
+/* Auth Card - Travel Theme */
 .auth-card {
-  background: #FFFAF0;
+  background: #ffffff;
   border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(139, 69, 19, 0.3);
+  box-shadow: 0 20px 60px rgba(2, 6, 23, 0.25);
   padding: 3rem;
   max-width: 480px;
   width: 100%;
   position: relative;
   z-index: 1;
   animation: slideUp 0.6s ease-out;
-  border: 2px solid #D4A574;
+  border: 1px solid rgba(2, 6, 23, 0.08);
 }
 
 @keyframes slideUp {
@@ -56,7 +56,7 @@
   }
 }
 
-/* Auth Header - Heritage Theme */
+/* Auth Header - Travel Theme */
 .auth-header {
   text-align: center;
   margin-bottom: 2.5rem;
@@ -65,16 +65,14 @@
 .auth-header h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #8B4513;
+  color: #0f172a;
   margin: 0 0 0.5rem;
-  font-family: 'Georgia', serif;
 }
 
 .auth-header p {
   font-size: 1rem;
-  color: #A0826D;
+  color: #64748b;
   margin: 0;
-  font-style: italic;
 }
 
 /* Auth Form */
@@ -93,30 +91,29 @@
 .form-group label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #8B4513;
-  font-family: 'Georgia', serif;
+  color: #0f172a;
 }
 
 .form-group input {
   padding: 0.875rem 1rem;
-  border: 2px solid #D4A574;
+  border: 2px solid #e2e8f0;
   border-radius: 8px;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background: #FFF8F0;
-  color: #4A3728;
+  background: #ffffff;
+  color: #0f172a;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #8B4513;
+  border-color: #0ea5e9;
   background: white;
-  box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
 }
 
 .form-group input.error {
-  border-color: #A0522D;
-  background: #FFF5EE;
+  border-color: #ef4444;
+  background: #fef2f2;
 }
 
 .form-group input:disabled {
@@ -126,40 +123,39 @@
 
 .error-message {
   font-size: 0.85rem;
-  color: #A0522D;
+  color: #ef4444;
   font-weight: 500;
 }
 
 .form-error {
-  background: #FFF5EE;
-  border: 1px solid #D4A574;
-  color: #A0522D;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
   padding: 0.875rem 1rem;
   border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 500;
 }
 
-/* Submit Button - Heritage Theme */
+/* Submit Button - Travel Theme */
 .auth-submit-btn {
   padding: 1rem;
-  background: linear-gradient(135deg, #D4A574 0%, #C19463 100%);
-  color: #4A3728;
+  background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+  color: #ffffff;
   border: none;
   border-radius: 8px;
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(212, 165, 116, 0.4);
+  box-shadow: 0 8px 20px rgba(2,6,23,0.12);
   margin-top: 0.5rem;
-  font-family: 'Georgia', serif;
 }
 
 .auth-submit-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(212, 165, 116, 0.5);
-  background: linear-gradient(135deg, #C19463 0%, #B08352 100%);
+  box-shadow: 0 12px 28px rgba(2,6,23,0.18);
+  background: linear-gradient(135deg, #22c55e 0%, #0ea5e9 100%);
 }
 
 .auth-submit-btn:active:not(:disabled) {
@@ -171,16 +167,16 @@
   cursor: not-allowed;
 }
 
-/* Auth Footer - Heritage Theme */
+/* Auth Footer - Travel Theme */
 .auth-footer {
   margin-top: 2rem;
   text-align: center;
   padding-top: 2rem;
-  border-top: 1px solid #D4A574;
+  border-top: 1px solid #e2e8f0;
 }
 
 .auth-footer p {
-  color: #A0826D;
+  color: #64748b;
   font-size: 0.95rem;
   margin: 0;
 }
@@ -188,18 +184,17 @@
 .link-btn {
   background: none;
   border: none;
-  color: #8B4513;
+  color: #0ea5e9;
   font-weight: 600;
   cursor: pointer;
   text-decoration: none;
   transition: color 0.2s ease;
   padding: 0;
   font-size: inherit;
-  font-family: 'Georgia', serif;
 }
 
 .link-btn:hover:not(:disabled) {
-  color: #A0522D;
+  color: #0284c7;
   text-decoration: underline;
 }
 

@@ -15,6 +15,7 @@
 * Add new locations with image upload
 * Responsive grid layout with modern UI
 * Lazy-loaded images with fallback placeholders
+* Clean product badges: all locations are visible, but the "Not for sale" text is hidden; a Buy button appears only when stock (> 0) is available
 
 ### Services Directory
 
@@ -79,6 +80,16 @@ npm run build
 # Serve production build
 npm run serve
 ```
+
+### Configuration
+
+Create a `.env` file in the project root if you need to point the frontend to a different backend API:
+
+```bash
+REACT_APP_API_URL=https://your-backend.example.com
+```
+
+No Google Maps API keys are needed; routes open in the device’s native maps app.
 
 ---
 

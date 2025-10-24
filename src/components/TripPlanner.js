@@ -468,7 +468,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
         <div className="hero-background">
           <SafeImage 
             src="https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=1920&q=80"
-            alt="Karnataka Heritage"
+            alt="Karnataka Landmarks"
           />
           <div className="hero-overlay"></div>
         </div>
@@ -516,7 +516,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                   id="title"
                   name="title"
                   type="text"
-                  placeholder="e.g., Weekend Heritage Tour of Mysore"
+                  placeholder="e.g., Weekend Getaway to Mysore"
                   value={tripData.title}
                   onChange={handleTripDataChange}
                   required
@@ -710,7 +710,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                   >
                     <div className="location-image">
                       <SafeImage 
-                        src={location.image || `https://source.unsplash.com/500x350/?${encodeURIComponent(location.name)},karnataka,heritage`}
+                        src={location.image || `https://source.unsplash.com/500x350/?${encodeURIComponent(location.name)},karnataka,travel`}
                         alt={location.name}
                       />
                       <div className="image-overlay"></div>
@@ -743,11 +743,11 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                         <div className="meta-item">
                           <div className="meta-icon">
                             <SafeImage 
-                              src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=50&q=80"
-                              alt="Heritage"
+                              src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=50&q=80"
+                              alt="Landmark"
                             />
                           </div>
-                          <span>🏛️ Heritage Site</span>
+                          <span>📍 Landmark</span>
                         </div>
                       </div>
                       
@@ -1024,13 +1024,13 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
               <div className="feature-item">
                 <div className="feature-icon">
                   <SafeImage 
-                    src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=100&q=80"
-                    alt="Heritage"
+                    src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=100&q=80"
+                    alt="Landmarks"
                   />
                 </div>
                 <div className="feature-content">
-                  <h4>🏛️ Heritage Sites</h4>
-                  <p>Explore Karnataka's rich cultural heritage</p>
+                  <h4>📍 Iconic Landmarks</h4>
+                  <p>Discover Karnataka's most iconic places</p>
                 </div>
               </div>
             </div>
@@ -1160,7 +1160,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                           <>
                             <div className="location-card-image">
                               <SafeImage 
-                                src={item.location.image || `https://source.unsplash.com/600x400/?${encodeURIComponent(item.location.name)},karnataka,heritage`}
+                                src={item.location.image || `https://source.unsplash.com/600x400/?${encodeURIComponent(item.location.name)},karnataka,travel`}
                                 alt={item.location.name}
                               />
                               {item.visited && (
@@ -1192,9 +1192,9 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                                 <div className="meta-card">
                                   <SafeImage 
                                     src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=50&q=80"
-                                    alt="Heritage"
+                                    alt="Landmark"
                                   />
-                                  <span>🏛️ Heritage Site</span>
+                                  <span>📍 Landmark</span>
                                 </div>
                               </div>
                               
