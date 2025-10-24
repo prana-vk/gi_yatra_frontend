@@ -12,7 +12,8 @@ body {
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
   line-height: 1.6;
   color: #1f2937;
-  background: #f8fafc;
+  /* Warm, parchment-like background for a subtle historical feel */
+  background: #f4ead9;
   min-height: 100vh;
 }
 
@@ -20,7 +21,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f8fafc;
+  background: #f4ead9;
 }
 
 /* ===============================================
@@ -28,7 +29,8 @@ body {
    =============================================== */
 
 .app-header {
-  background: linear-gradient(90deg, rgba(14,165,233,0.9), rgba(99,102,241,0.9));
+  /* Warm earthy gradient to match historical theme */
+  background: linear-gradient(90deg, rgba(212,180,131,0.95), rgba(176,137,104,0.95));
   backdrop-filter: blur(10px);
   box-shadow: 0 2px 20px rgba(2, 6, 23, 0.15);
   position: fixed;
@@ -94,7 +96,7 @@ body {
 
 .nav-item.active {
   background: #ffffff;
-  color: #0ea5e9;
+  color: #8b5e34;
   box-shadow: 0 4px 15px rgba(2, 6, 23, 0.2);
   font-weight: 600;
 }
@@ -152,7 +154,7 @@ body {
 .app-main {
   flex: 1;
   padding-top: 100px; /* Account for fixed header */
-  background: #f8fafc;
+  background: #f4ead9;
 }
 
 .main-content {
@@ -220,14 +222,14 @@ body {
 }
 
 .tab-btn:hover {
-  background: rgba(14,165,233,0.1);
-  color: #0ea5e9;
+  background: rgba(176,137,104,0.12);
+  color: #8b5e34;
 }
 
 .tab-btn.active {
-  background: #0ea5e9;
+  background: #8b5e34;
   color: #ffffff;
-  box-shadow: 0 8px 20px rgba(14,165,233,0.35);
+  box-shadow: 0 8px 20px rgba(139,94,52,0.35);
   font-weight: 600;
 }
 
@@ -248,7 +250,7 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(90deg, #0ea5e9, #6366f1);
+  background: linear-gradient(90deg, #b08968, #8b5e34);
   color: #ffffff;
   font-weight: 600;
 }
@@ -260,13 +262,13 @@ body {
 
 .btn-secondary {
   background: #ffffff;
-  color: #0ea5e9;
-  border: 2px solid rgba(14,165,233,0.35);
+  color: #8b5e34;
+  border: 2px solid rgba(176,137,104,0.35);
 }
 
 .btn-secondary:hover {
-  background: #f0f9ff;
-  border-color: #0ea5e9;
+  background: #f7efe4;
+  border-color: #8b5e34;
 }
 
 .btn-danger {
@@ -323,8 +325,8 @@ body {
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #0ea5e9;
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+  border-color: #b08968;
+  box-shadow: 0 0 0 3px rgba(176, 137, 104, 0.25);
 }
 
 .form-group input.error,
@@ -396,6 +398,38 @@ body {
 .footer-section p {
   color: #94a3b8;
   line-height: 1.6;
+}
+
+/* ===============================================
+   PROMO TICKER (Accessible marquee replacement)
+   =============================================== */
+
+.promo-ticker {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.promo-ticker .ticker-track {
+  display: inline-flex;
+  gap: 3rem;
+  color: #ffffff;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  animation: tickerScroll 30s linear infinite;
+}
+
+.promo-ticker:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+@keyframes tickerScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promo-ticker .ticker-track { animation: none; }
 }
 
 .footer-section ul {

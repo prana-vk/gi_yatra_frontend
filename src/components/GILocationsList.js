@@ -105,7 +105,7 @@ export default function GILocationsList() {
   const keyFor = (loc, idx) => loc.id ?? loc._id ?? `${loc.name ?? 'loc'}-${idx}`;
 
   return (
-    <div className="gi-locations-list" style={{ maxWidth: 1400, margin: '0 auto', padding: '2.5rem 1.5rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', minHeight: '100vh' }}>
+    <div className="gi-locations-list" style={{ maxWidth: 1400, margin: '0 auto', padding: '2.5rem 1.5rem', background: 'linear-gradient(135deg, #f6eddc 0%, #ead9c0 100%)', minHeight: '100vh' }}>
       <Modal
         isOpen={purchaseModal.open}
         title={purchaseModal.loc ? `Buy ${purchaseModal.loc.name}` : 'Buy'}
@@ -301,7 +301,7 @@ export default function GILocationsList() {
                     {location.name}
                   </h3>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#667eea', fontWeight: 600, fontSize: '0.9rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#8b5e34', fontWeight: 600, fontSize: '0.9rem' }}>
                     {location.district || '—'}
                   </div>
 

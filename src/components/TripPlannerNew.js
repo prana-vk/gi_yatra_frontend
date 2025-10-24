@@ -254,7 +254,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      background: 'linear-gradient(135deg, #f6eddc 0%, #ead9c0 100%)',
       minHeight: '100vh',
       padding: '2rem 1.5rem'
     }}>
@@ -300,7 +300,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                   alignItems: 'center',
                   gap: 8,
                   background: isActive ? '#fff' : isCompleted ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)',
-                  color: isActive ? '#667eea' : '#fff',
+                  color: isActive ? '#8b5e34' : '#fff',
                   padding: '12px 20px',
                   borderRadius: 50,
                   fontWeight: 700,
@@ -312,7 +312,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                 onClick={() => isCompleted && setCurrentStep(stepNum)}
               >
                 <span style={{
-                  background: isActive ? '#667eea' : isCompleted ? '#10b981' : 'rgba(255,255,255,0.3)',
+                  background: isActive ? '#8b5e34' : isCompleted ? '#10b981' : 'rgba(255,255,255,0.3)',
                   color: '#fff',
                   width: 28,
                   height: 28,
@@ -364,7 +364,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                     transition: 'border 0.2s',
                     boxSizing: 'border-box'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = '#667eea'}
+                  onFocus={(e) => e.target.style.borderColor = '#8b5e34'}
                   onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
                 />
               </div>
@@ -390,7 +390,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                       fontSize: '1rem',
                       outline: 'none'
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#667eea'}
+                    onFocus={(e) => e.target.style.borderColor = '#8b5e34'}
                     onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
                   />
                   <p style={{ margin: '8px 0 0', fontSize: '0.85rem', color: '#6b7280' }}>
@@ -418,7 +418,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                         fontSize: '1rem',
                         outline: 'none'
                       }}
-                      onFocus={(e) => e.target.style.borderColor = '#667eea'}
+                      onFocus={(e) => e.target.style.borderColor = '#8b5e34'}
                       onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
                     />
                     <button
@@ -463,7 +463,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                       fontSize: '1rem',
                       outline: 'none'
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#667eea'}
+                    onFocus={(e) => e.target.style.borderColor = '#8b5e34'}
                     onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
                   />
                 </div>
@@ -485,7 +485,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                       fontSize: '1rem',
                       outline: 'none'
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#667eea'}
+                    onFocus={(e) => e.target.style.borderColor = '#8b5e34'}
                     onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
                   />
                 </div>
@@ -512,7 +512,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                   type="submit"
                   style={{
                     padding: '1rem 2rem',
-                    background: 'linear-gradient(90deg, #667eea, #764ba2)',
+                    background: 'linear-gradient(90deg, #b08968, #8b5e34)',
                     color: '#fff',
                     borderRadius: 50,
                     border: 'none',
@@ -601,7 +601,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                       onClick={() => handleLocationToggle(location)}
                       style={{
                         background: isSelected ? '#ede9fe' : '#f9fafb',
-                        border: isSelected ? '3px solid #667eea' : '2px solid #e5e7eb',
+                        border: isSelected ? '3px solid #8b5e34' : '2px solid #e5e7eb',
                         borderRadius: 16,
                         padding: '1rem',
                         cursor: 'pointer',
@@ -621,8 +621,8 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                           width: 24,
                           height: 24,
                           borderRadius: '50%',
-                          border: '2px solid #667eea',
-                          background: isSelected ? '#667eea' : '#fff',
+                          border: '2px solid #8b5e34',
+                          background: isSelected ? '#8b5e34' : '#fff',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -635,7 +635,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                           <h3 style={{ margin: '0 0 4px', fontSize: '1.1rem', fontWeight: 700, color: '#1f2937' }}>
                             {location.name}
                           </h3>
-                          <p style={{ margin: '0 0 8px', fontSize: '0.85rem', color: '#667eea', fontWeight: 600 }}>
+                          <p style={{ margin: '0 0 8px', fontSize: '0.85rem', color: '#8b5e34', fontWeight: 600 }}>
                             {location.district}
                           </p>
                           <p style={{ margin: 0, fontSize: '0.85rem', color: '#6b7280', lineHeight: 1.5 }}>
@@ -672,7 +672,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                   disabled={selectedLocations.length === 0}
                   style={{
                     padding: '1rem 2rem',
-                    background: selectedLocations.length === 0 ? '#d1d5db' : 'linear-gradient(90deg, #667eea, #764ba2)',
+                    background: selectedLocations.length === 0 ? '#d1d5db' : 'linear-gradient(90deg, #b08968, #8b5e34)',
                     color: '#fff',
                     borderRadius: 50,
                     border: 'none',
@@ -717,7 +717,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                         width: 32,
                         height: 32,
                         borderRadius: '50%',
-                        background: '#667eea',
+                        background: '#8b5e34',
                         color: '#fff',
                         display: 'flex',
                         alignItems: 'center',
@@ -858,7 +858,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                     onClick={() => setShowMap(!showMap)}
                     style={{
                       padding: '0.75rem 1.5rem',
-                      background: '#667eea',
+                      background: '#8b5e34',
                       color: '#fff',
                       borderRadius: 50,
                       border: 'none',
@@ -918,7 +918,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                           width: 12,
                           height: 12,
                           borderRadius: '50%',
-                          background: item.item_type === 'location' ? '#667eea' : '#f59e0b',
+                          background: item.item_type === 'location' ? '#8b5e34' : '#f59e0b',
                           border: '2px solid #fff',
                           boxShadow: '0 0 0 2px #d1d5db'
                         }} />
@@ -959,7 +959,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                                 <div style={{ fontSize: '0.9rem', color: '#6b7280', marginBottom: 6 }}>
                                   ⏰ {item.start_time} - {item.end_time} ({formatDuration(item.duration_minutes)})
                                 </div>
-                                <div style={{ fontSize: '0.85rem', color: '#667eea' }}>
+                                <div style={{ fontSize: '0.85rem', color: '#8b5e34' }}>
                                   📌 {item.location.district}
                                 </div>
                               </div>
@@ -1004,7 +1004,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                         </div>
                         <div>
                           <span style={{ color: '#6b7280' }}>Visiting:</span>
-                          <span style={{ fontWeight: 700, marginLeft: 4, color: '#667eea' }}>{formatDuration(day.summary.visitTime)}</span>
+                          <span style={{ fontWeight: 700, marginLeft: 4, color: '#8b5e34' }}>{formatDuration(day.summary.visitTime)}</span>
                         </div>
                         <div>
                           <span style={{ color: '#6b7280' }}>Total:</span>

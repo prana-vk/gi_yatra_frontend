@@ -89,20 +89,18 @@ function AppContent() {
 
       {/* Promo Section */}
       <div style={{
-        background: 'linear-gradient(90deg, #0ea5e9 0%, #6366f1 100%)',
+        background: 'linear-gradient(90deg, #d4b483 0%, #b08968 100%)',
         padding: '1rem 0',
         overflow: 'hidden',
         borderTop: '1px solid rgba(255,255,255,0.2)',
         borderBottom: '1px solid rgba(255,255,255,0.2)'
       }}>
-        <marquee style={{
-          color: 'white',
-          fontSize: '1.15rem',
-          fontWeight: 700,
-          letterSpacing: '1px'
-        }}>
-          ✨ Plan your perfect Karnataka itinerary — smart routes, real travel times, beautiful trips.
-        </marquee>
+        <div className="promo-ticker" aria-live="polite">
+          <div className="ticker-track">
+            <span>✨ Plan your perfect Karnataka itinerary — smart routes, real travel times, beautiful trips.</span>
+            <span aria-hidden="true">✨ Plan your perfect Karnataka itinerary — smart routes, real travel times, beautiful trips.</span>
+          </div>
+        </div>
       </div>
 
       {/* Footer */}
