@@ -212,8 +212,8 @@ function SignupPage({ onNavigate }) {
     <div className="auth-split-container">
       <div className="auth-split-left">
         <div className="auth-header" style={{textAlign:'left'}}>
-          <h1 style={{fontSize:'2.3rem',fontWeight:800,marginBottom:8, color:'#181818'}}>Create Your GI Yatra Account</h1>
-          <p style={{color:'#888',fontSize:'1.08rem',marginBottom:32}}>Embark on a journey through Karnataka's heritage.</p>
+          <h1 style={{fontSize:'1.9rem',fontWeight:800,marginBottom:6, color:'#181818'}}>Create Your GI Yatra Account</h1>
+          <p style={{color:'#888',fontSize:'0.96rem',marginBottom:12}}>Embark on a journey through Karnataka's heritage.</p>
         </div>
         {step === 'request' ? (
           <form onSubmit={handleRequestOtp} className="auth-form">
@@ -231,7 +231,7 @@ function SignupPage({ onNavigate }) {
                 style={{fontSize:'1.1rem'}} />
               {errors.email && <span className="error-message">{errors.email}</span>}
             </div>
-            <button type="submit" disabled={requestLoading} style={{marginTop:24,background:'#ff7a18',color:'#fff',fontWeight:700,fontSize:'1.15rem',border:'none',borderRadius:16,padding:'1rem 0',width:'100%',boxShadow:'none'}}>
+            <button type="submit" disabled={requestLoading} style={{marginTop:12,background:'#ff7a18',color:'#fff',fontWeight:700,fontSize:'1rem',border:'none',borderRadius:12,padding:'0.6rem 0',width:'100%',boxShadow:'none'}}>
               {requestLoading ? 'Sending...' : 'Continue'}
             </button>
             {requestMessage && (
@@ -281,21 +281,21 @@ function SignupPage({ onNavigate }) {
                 style={{fontSize:'1.1rem'}} />
               {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
             </div>
-            <button type="submit" disabled={loading} style={{marginTop:24,background:'#ff7a18',color:'#fff',fontWeight:700,fontSize:'1.15rem',border:'none',borderRadius:16,padding:'1rem 0',width:'100%',boxShadow:'none'}}>
+            <button type="submit" disabled={loading} style={{marginTop:12,background:'#ff7a18',color:'#fff',fontWeight:700,fontSize:'1rem',border:'none',borderRadius:12,padding:'0.6rem 0',width:'100%',boxShadow:'none'}}>
               {loading ? 'Creating...' : 'Continue'}
             </button>
           </form>
         )}
-        <div style={{marginTop:32,textAlign:'center'}}>
+        <div style={{marginTop:12,textAlign:'center'}}>
           <span style={{color:'#888'}}>Already have an account? </span>
           <button
             onClick={() => onNavigate && onNavigate('login')}
             style={{background:'none',border:'none',color:'#ff7a18',fontWeight:600,cursor:'pointer',fontSize:'1.05rem',padding:0,marginLeft:4}}>Log In</button>
         </div>
       </div>
-      <div className="auth-split-right">
-        <img src={signupImage} alt="Signup visual" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:32}} />
-      </div>
+    <div className="auth-split-right">
+  <img src={signupImage} alt="Signup visual" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:0}} />
+    </div>
       <Modal isOpen={resetModalOpen} title="Reset password" onClose={() => setResetModalOpen(false)} actions={[]}>
         {resetStep === 'request' ? (
           <form onSubmit={handleResetSubmit}>

@@ -1,11 +1,12 @@
 /* This file has been removed as part of the new UI redesign. All UI is now handled by HomePage.css. */
 /* Auth Container - Travel Theme */
 .auth-container {
-  min-height: 100vh;
+  /* don't force full viewport height; allow the card to size to content and stay centered */
+  min-height: auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 1rem;
   background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
   position: relative;
   overflow: hidden;
@@ -34,34 +35,60 @@
 
 /* Split layout for authentication pages */
 .auth-split-container {
-  min-height: 100vh;
+  /* keep the card compact and bounded inside the viewport */
+  max-height: calc(100vh - 40px);
   display: flex;
+  /* stretch children to equal height so the image panel matches the left card */
   align-items: stretch;
   justify-content: center;
-  background: #f7f7f7;
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  gap: 0;
+  border: 1px solid rgba(0,0,0,0.06);
+  margin: 8px auto;
+  max-width: 640px;
 }
 
 .auth-split-left {
   background: #fff;
-  border-radius: 32px 0 0 32px;
-  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.07);
-  /* reduced size by ~10% */
-  padding: 50px 43px 43px 43px;
-  width: 378px;
+  /* rounded left half */
+  border-radius: 20px 0 0 20px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  /* compact padding to reduce height */
+  padding: 20px 20px 16px 20px;
+  width: 320px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  overflow: hidden;
+  /* ensure this panel stretches to container height */
+  align-self: stretch;
 }
 
 .auth-split-right {
-  background: #f7f7f7;
-  border-radius: 0 32px 32px 0;
-  /* match reduced width */
-  width: 378px;
+  background: #fff;
+  border-radius: 0 20px 20px 0;
+  width: 320px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  padding: 0;
+  position: relative;
+  align-self: stretch;
+}
+
+/* ensure any image inside the right panel fully covers and matches the card height */
+.auth-split-right img,
+.auth-split-right .panel-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 @media (max-width: 900px) {
@@ -90,27 +117,27 @@
 }
 
 .auth-header h1 {
-  font-size: 2.3rem;
+  font-size: 1.9rem;
   font-weight: 800;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   color: #181818;
 }
 
 .auth-header p {
   color: #181818 !important;
-  font-size: 1.08rem;
-  margin-bottom: 32px;
+  font-size: 0.96rem;
+  margin-bottom: 12px;
 }
 
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 10px;
 }
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 .form-group label {
   font-weight: 500;
@@ -118,10 +145,10 @@
   margin-bottom: 2px;
 }
 .form-group input {
-  padding: 0.7rem 1rem;
-  border-radius: 12px;
+  padding: 0.45rem 0.6rem;
+  border-radius: 10px;
   border: 1px solid #d1d5db;
-  font-size: 1.1rem;
+  font-size: 1rem;
   background: #fafafa;
   outline: none;
   transition: border 0.2s;
@@ -161,10 +188,10 @@
 
 /* Auth Footer - Travel Theme */
 .auth-footer {
-  margin-top: 2rem;
+  margin-top: 1rem;
   text-align: center;
-  padding-top: 2rem;
-  border-top: 1px solid #e2e8f0;
+  padding-top: 1rem;
+  border-top: 1px solid #e6eef6;
 }
 
 .auth-footer p {
@@ -206,6 +233,6 @@
   }
 
   .auth-header h1 {
-    font-size: 1.75rem;
+    font-size: 1.6rem;
   }
 }

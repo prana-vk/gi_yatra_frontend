@@ -156,8 +156,8 @@ function LoginPage({ onNavigate }) {
     <div className="auth-split-container">
       <div className="auth-split-left">
         <div className="auth-header" style={{textAlign:'left'}}>
-          <h1 style={{fontSize:'2.3rem',fontWeight:800,marginBottom:8, color:'#181818'}}>Welcome Back</h1>
-          <p style={{color:'#888',fontSize:'1.08rem',marginBottom:32}}>Log in to your GI Yatra account</p>
+          <h1 style={{fontSize:'1.9rem',fontWeight:800,marginBottom:6, color:'#181818'}}>Welcome Back</h1>
+          <p style={{color:'#888',fontSize:'0.96rem',marginBottom:12}}>Log in to your GI Yatra account</p>
         </div>
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
@@ -188,26 +188,26 @@ function LoginPage({ onNavigate }) {
               style={{fontSize:'1.1rem'}} />
             {errors.password && <span className="error-message">{errors.password}</span>}
           </div>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: -6 }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 0 }}>
             <button type="button" onClick={() => openResetModal(formData.email)} className="link-btn" style={{ fontSize: '0.95rem' }}>Forgot password?</button>
           </div>
           {errors.detail && (
             <div className="form-error">{errors.detail}</div>
           )}
-          <button type="submit" disabled={loading} style={{marginTop:24,background:'#ff7a18',color:'#fff',fontWeight:700,fontSize:'1.15rem',border:'none',borderRadius:16,padding:'1rem 0',width:'100%',boxShadow:'none'}}>
+          <button type="submit" disabled={loading} style={{marginTop:12,background:'#ff7a18',color:'#fff',fontWeight:700,fontSize:'1rem',border:'none',borderRadius:12,padding:'0.6rem 0',width:'100%',boxShadow:'none'}}>
             {loading ? 'Logging in...' : 'Continue'}
           </button>
         </form>
-        <div style={{marginTop:32,textAlign:'center'}}>
+        <div style={{marginTop:12,textAlign:'center'}}>
           <span style={{color:'#888'}}>Don't have an account? </span>
           <button
             onClick={() => onNavigate && onNavigate('signup')}
             style={{background:'none',border:'none',color:'#ff7a18',fontWeight:600,cursor:'pointer',fontSize:'1.05rem',padding:0,marginLeft:4}}>Sign Up</button>
         </div>
       </div>
-      <div className="auth-split-right">
-        <img src={loginImage} alt="Login visual" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:32}} />
-      </div>
+    <div className="auth-split-right">
+  <img src={loginImage} alt="Login visual" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:0}} />
+    </div>
       <Modal isOpen={resetModalOpen} title="Reset password" onClose={() => setResetModalOpen(false)} actions={[]}>
         {resetStep === 'request' ? (
           <form onSubmit={handleResetSubmit}>
