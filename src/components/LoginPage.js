@@ -116,6 +116,9 @@ function LoginPage({ onNavigate }) {
               style={{fontSize:'1.1rem'}} />
             {errors.password && <span className="error-message">{errors.password}</span>}
           </div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: -6 }}>
+            <button type="button" onClick={() => setResetModalOpen(true)} className="link-btn" style={{ fontSize: '0.95rem' }}>Forgot password?</button>
+          </div>
           {errors.detail && (
             <div className="form-error">{errors.detail}</div>
           )}

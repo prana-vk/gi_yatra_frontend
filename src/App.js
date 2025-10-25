@@ -58,12 +58,16 @@ function AppContent() {
               </button>
             ))}
             {isAuthenticated && (
-              <div className="user-menu">
-                <span className="user-greeting"> {user?.username}</span>
-                <button onClick={handleLogout} className="logout-btn">
-                   Logout
+              <>
+                {/* Show username as a subtle label */}
+                <div className="nav-item" style={{ background: 'transparent', cursor: 'default', padding: '0.4rem 0.8rem', color: '#6b7280', fontWeight: 600 }}>
+                  <span className="nav-label">{user?.username}</span>
+                </div>
+                {/* Render logout as a regular nav item so it stays inline with other buttons */}
+                <button onClick={handleLogout} className="nav-item" style={{ background: 'transparent', color: '#181818' }}>
+                  <span className="nav-label">Logout</span>
                 </button>
-              </div>
+              </>
             )}
           </nav>
         </div>
