@@ -40,13 +40,13 @@ function NewHomePage({ onNavigate }) {
     },
     {
       id: 2,
-      img: 'https://m.media-amazon.com/images/S/aplus-media-library-service-media/1e778006-6416-4825-bdd3-344c79a80dfd.__CR49,0,983,608_PT0_SX970_V1___.jpg',
+      img: 'https://thumbs.dreamstime.com/b/dharwad-peda-brown-quick-milk-based-dessert-made-janamashtami-festival-offered-to-lord-krishna-as-prasad-104030051.jpg',
       title: 'Discover Geographical Indications',
       subtitle: 'Map and background about GIs'
     },
     {
       id: 3,
-      img: 'https://m.media-amazon.com/images/S/aplus-media-library-service-media/1e778006-6416-4825-bdd3-344c79a80dfd.__CR49,0,983,608_PT0_SX970_V1___.jpg',
+      img: 'https://www.headlinekarnataka.com/img/news/news_display_image_1598801205.jpg',
       title: 'Explore Karnataka\'s Geographical Indications',
       subtitle: 'Discover authentic GI products and unique locations.'
     }
