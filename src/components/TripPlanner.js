@@ -173,12 +173,12 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
         // Update existing trip in local storage
         const updatedTrip = updateLocalTrip(editingTrip.id, tripData);
         setCreatedTrip(updatedTrip);
-        console.log('✅ Trip updated:', updatedTrip);
+        console.log('Trip updated:', updatedTrip);
       } else {
         // Create new trip in local storage
         const newTrip = saveLocalTrip(tripData);
         setCreatedTrip(newTrip);
-        console.log('✅ Trip created:', newTrip);
+        console.log('Trip created:', newTrip);
       }
       
       setCurrentStep(2);
@@ -245,7 +245,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
       const progress = getTripProgress(updatedTrip.id);
       setTripProgress(progress);
 
-      showNotification('Schedule generated locally! 🗺️✨', 'success');
+  showNotification('Schedule generated locally!', 'success');
       setCurrentStep(4);
     } catch (error) {
       console.error('❌ Error generating schedule locally:', error);
@@ -257,7 +257,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
   };
 
   const handleFinish = () => {
-    showNotification('Trip planned successfully! 🎉', 'success');
+  showNotification('Trip planned successfully!', 'success');
     if (onTripSaved) {
       onTripSaved(createdTrip);
     }
@@ -275,7 +275,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
       const progress = getTripProgress(createdTrip.id);
       setTripProgress(progress);
       
-      showNotification('Location marked as visited! ✅', 'success');
+  showNotification('Location marked as visited!', 'success');
     } catch (error) {
       console.error('Error marking location as visited:', error);
       showNotification('Error updating visit status.', 'error');
@@ -335,7 +335,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
           start_location_longitude: lng,
           start_location_name: address
         }));
-        showNotification('Location detected! 📍', 'success');
+    showNotification('Location detected!', 'success');
         setLocating(false);
       },
       () => {
@@ -448,9 +448,9 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
   if (locationsError) {
     return (
       <div className="error-container">
-        <h2>⚠️ {locationsError}</h2>
-        <button onClick={fetchInitialData} className="retry-btn">Retry</button>
-      </div>
+          <h2>{locationsError}</h2>
+          <button onClick={fetchInitialData} className="retry-btn">Retry</button>
+        </div>
     );
   }
 
@@ -473,14 +473,14 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
           <div className="hero-overlay"></div>
         </div>
         <div className="hero-content">
-          <h1>🗺️ {editingTrip ? 'Edit Your Trip' : 'Plan Your Perfect Karnataka GI Journey'}</h1>
+          <h1>{editingTrip ? 'Edit Your Trip' : 'Plan Your Perfect Karnataka GI Journey'}</h1>
           <p>Discover authentic Geographical Indications and regional products of Karnataka</p>
           <div className="step-indicator">
             {[
-              { num: 1, icon: '📋', label: 'Details' },
-              { num: 2, icon: '📍', label: 'Locations' },
-              { num: 3, icon: '🔄', label: 'Generate' },
-              { num: 4, icon: '📅', label: 'Schedule' }
+              { num: 1, icon: '', label: 'Details' },
+              { num: 2, icon: '', label: 'Locations' },
+              { num: 3, icon: '', label: 'Generate' },
+              { num: 4, icon: '', label: 'Schedule' }
             ].map(step => (
               <div key={step.num} className={`step ${currentStep >= step.num ? 'active' : ''} ${currentStep === step.num ? 'current' : ''}`}>
                 <div className="step-icon">{step.icon}</div>
@@ -503,14 +503,14 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
               />
               <div className="step-overlay"></div>
             </div>
-            <h2>📋 Let's Start Planning Your Trip</h2>
+            <h2>Let's Start Planning Your Trip</h2>
             <p>Tell us about your journey to Karnataka's treasures</p>
           </div>
           
           <form onSubmit={handleStep1Submit} className="trip-form">
             <div className="form-grid">
               <div className="form-group full-width form-card">
-                <div className="form-icon">🎯</div>
+                <div className="form-icon"></div>
                 <label htmlFor="title">Trip Title *</label>
                 <input
                   id="title"
@@ -524,7 +524,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
               </div>
 
               <div className="form-group form-card">
-                <div className="form-icon">📆</div>
+                <div className="form-icon"></div>
                 <label htmlFor="num_days">Number of Days *</label>
                 <input
                   id="num_days"
@@ -548,7 +548,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
               </div>
 
               <div className="form-group form-card">
-                <div className="form-icon">📍</div>
+                <div className="form-icon"></div>
                 <label htmlFor="start_location_name">Starting Location *</label>
                 <div className="location-input">
                   <input
@@ -568,7 +568,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                           alt="Loading"
                           style={{ width: '24px', height: '24px', borderRadius: '50%' }}
                         />
-                      ) : '📍'}
+                      ) : ''}
                     </span>
                     {locating ? 'Detecting…' : 'Use My Location'}
                   </button>
@@ -582,7 +582,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                     src="https://images.unsplash.com/photo-1501139083538-0139583c060f?w=100&q=80"
                     alt="Time"
                   />
-                  <h4>⏰ Preferred Daily Schedule</h4>
+                  <h4>Preferred Daily Schedule</h4>
                 </div>
                 <div className="time-inputs">
                   <div className="form-group">
@@ -639,7 +639,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
               />
               <div className="step-overlay"></div>
             </div>
-            <h2>📍 Choose Your Destinations</h2>
+            <h2>Choose Your Destinations</h2>
             <p>Select amazing places to visit in Karnataka</p>
           </div>
           
@@ -679,7 +679,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
               className="search-input"
             />
             
-            <div className="filter-icon">🗺️</div>
+            <div className="filter-icon"></div>
             <select
               value={selectedDistrict}
               onChange={(e) => setSelectedDistrict(e.target.value)}
@@ -716,12 +716,12 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                       <div className="image-overlay"></div>
                       {selectedLocations.some(sel => sel.id === location.id) && (
                         <div className="selected-badge">
-                          <span className="badge-icon">✅</span>
+                          <span className="badge-icon"></span>
                           <span>Selected</span>
                         </div>
                       )}
                       <div className="district-badge">
-                        📍 {location.district}
+                        {location.district}
                       </div>
                     </div>
                     
@@ -737,7 +737,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                               alt="Duration"
                             />
                           </div>
-                          <span>⏰ {location.typical_visit_duration} mins</span>
+                          <span>{location.typical_visit_duration} mins</span>
                         </div>
                         
                         <div className="meta-item">
@@ -747,15 +747,15 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                               alt="Landmark"
                             />
                           </div>
-                          <span>📍 Landmark</span>
+                          <span>Landmark</span>
                         </div>
                       </div>
                       
                       <button className="selection-btn">
-                        {selectedLocations.some(sel => sel.id === location.id) ? (
-                          <><span className="btn-icon">✓</span> Selected</>
+                          {selectedLocations.some(sel => sel.id === location.id) ? (
+                          <>Selected</>
                         ) : (
-                          <><span className="btn-icon">+</span> Add to Trip</>
+                          <>Add to Trip</>
                         )}
                       </button>
                     </div>
@@ -808,7 +808,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                           className="remove-btn"
                           title="Remove from trip"
                         >
-                          ✕
+                          
                         </button>
                       </div>
                     ))}
@@ -840,7 +840,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
               />
               <div className="step-overlay"></div>
             </div>
-            <h2>🔄 Generate Your Perfect Schedule</h2>
+            <h2>Generate Your Perfect Schedule</h2>
             <p>We'll organize your trip into a day-by-day itinerary</p>
           </div>
           
@@ -850,7 +850,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                 src="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=200&q=80"
                 alt="Trip Summary"
               />
-              <h3>📋 Trip Summary</h3>
+              <h3>Trip Summary</h3>
             </div>
             
             <div className="trip-summary-grid">
@@ -921,7 +921,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
             </div>
 
             <div className="selected-locations-preview">
-              <h4>🎯 Your Selected Destinations</h4>
+              <h4>Your Selected Destinations</h4>
               <div className="locations-preview-grid">
                 {selectedLocations.map((location, idx) => (
                   <div key={location.id} className="preview-location-card">
@@ -934,8 +934,8 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                     </div>
                     <div className="preview-location-info">
                       <h5>{location.name}</h5>
-                      <p>📍 {location.district}</p>
-                      <p>⏰ {location.typical_visit_duration} mins</p>
+                      <p>{location.district}</p>
+                      <p>{location.typical_visit_duration} mins</p>
                     </div>
                   </div>
                 ))}
@@ -949,8 +949,8 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                 src="https://images.unsplash.com/photo-1551817958-20c1b2d4f7cc?w=200&q=80"
                 alt="AI Planning"
               />
-              <div>
-                <h3>🗺️ Smart Offline Schedule Generation</h3>
+                <div>
+                <h3>Smart Offline Schedule Generation</h3>
                 <p>Our intelligent algorithm will create your perfect itinerary</p>
               </div>
             </div>
@@ -964,7 +964,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                   />
                 </div>
                 <div className="feature-content">
-                  <h4>📅 Day-wise Organization</h4>
+                  <h4>Day-wise Organization</h4>
                   <p>Arrange your places into logical day-by-day visits</p>
                 </div>
               </div>
@@ -977,7 +977,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                   />
                 </div>
                 <div className="feature-content">
-                  <h4>⏰ Respect Your Schedule</h4>
+                  <h4>Respect Your Schedule</h4>
                   <p>Works within your preferred start and end times</p>
                 </div>
               </div>
@@ -990,7 +990,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                   />
                 </div>
                 <div className="feature-content">
-                  <h4>🚗 Smart Travel Buffers</h4>
+                  <h4>Smart Travel Buffers</h4>
                   <p>Add realistic travel time between locations</p>
                 </div>
               </div>
@@ -1003,7 +1003,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                   />
                 </div>
                 <div className="feature-content">
-                  <h4>🔒 Privacy First</h4>
+                  <h4>Privacy First</h4>
                   <p>No API keys or server required - works offline</p>
                 </div>
               </div>
@@ -1016,7 +1016,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                   />
                 </div>
                 <div className="feature-content">
-                  <h4>🗺️ Google Maps Integration</h4>
+                  <h4>Google Maps Integration</h4>
                   <p>Open each day's route with one tap</p>
                 </div>
               </div>
@@ -1029,14 +1029,14 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                   />
                 </div>
                 <div className="feature-content">
-                  <h4>📍 Iconic Landmarks</h4>
+                  <h4>Iconic Landmarks</h4>
                   <p>Discover Karnataka's most iconic places</p>
                 </div>
               </div>
             </div>
             
             <button onClick={handleGenerateSchedule} className="generate-btn">
-              <span className="btn-icon">🚀</span>
+              <span className="btn-icon"></span>
               Generate My Perfect Schedule
               <span className="btn-subtext">Click to create your itinerary</span>
             </button>
@@ -1062,7 +1062,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
               />
               <div className="step-overlay"></div>
             </div>
-            <h2>📅 Your Perfect Karnataka Journey</h2>
+            <h2>Your Perfect Karnataka Journey</h2>
             <p>Your optimized day-by-day itinerary is ready!</p>
           </div>
           
@@ -1077,22 +1077,22 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
               </div>
               <div className="progress-content">
                 <div className="progress-header">
-                  <h3>🎯 Your Trip Progress</h3>
+                  <h3>Your Trip Progress</h3>
                   <span className="progress-percentage">{tripProgress.percentage}%</span>
                 </div>
                 <div className="progress-stats">
-                  <span className="stat-item">
-                    <span className="stat-icon">✅</span>
+                    <span className="stat-item">
+                    <span className="stat-icon"></span>
                     {tripProgress.visited} Visited
                   </span>
                   <span className="stat-divider">•</span>
                   <span className="stat-item">
-                    <span className="stat-icon">📍</span>
+                    <span className="stat-icon"></span>
                     {tripProgress.total - tripProgress.visited} Remaining
                   </span>
                   <span className="stat-divider">•</span>
                   <span className="stat-item">
-                    <span className="stat-icon">🎯</span>
+                    <span className="stat-icon"></span>
                     {tripProgress.total} Total
                   </span>
                 </div>

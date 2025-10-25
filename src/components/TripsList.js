@@ -19,9 +19,9 @@ function TripsList({ onEditTrip, onCreateNew }) {
   }, []);
 
   const fetchTrips = async () => {
-    try {
-      setLoading(true);
-      console.log('📚 Loading trips from local storage...');
+  try {
+  setLoading(true);
+  console.log('Loading trips from local storage...');
       const data = getLocalTrips();
       console.log('✅ Trips loaded:', data);
       setTrips(data);
@@ -239,20 +239,20 @@ function TripsList({ onEditTrip, onCreateNew }) {
   return (
     <div className="trips-list-container">
       <div className="header">
-        <h1>🎒 Your Trips</h1>
+        <h1>Your Trips</h1>
         <p>Manage your planned trips and itineraries</p>
-        <button onClick={onCreateNew} className="create-new-btn">
-          ➕ Plan New Trip
+            <button onClick={onCreateNew} className="create-new-btn">
+          Plan New Trip
         </button>
       </div>
 
       {trips.length === 0 ? (
         <div className="no-trips">
-          <div className="empty-state">
-            <h3>🗺️ No trips planned yet!</h3>
+            <div className="empty-state">
+            <h3>No trips planned yet!</h3>
             <p>Start planning your first trip to explore Karnataka's beautiful locations.</p>
             <button onClick={onCreateNew} className="start-planning-btn">
-              🚀 Start Planning
+              Start Planning
             </button>
           </div>
         </div>
@@ -269,23 +269,23 @@ function TripsList({ onEditTrip, onCreateNew }) {
                 </div>
                 
                 <div className="trip-dates">
-                  <div className="date-info">
-                    <span className="label">🗓️ Start:</span>
+                    <div className="date-info">
+                    <span className="label">Start:</span>
                     <span className="value">{formatDate(trip.start_date)}</span>
                   </div>
                   <div className="date-info">
-                    <span className="label">🏁 End:</span>
+                    <span className="label">End:</span>
                     <span className="value">{formatDate(trip.end_date)}</span>
                   </div>
                 </div>
                 
                 <div className="trip-details">
                   <div className="detail">
-                    <span className="label">📍 Starting from:</span>
+                    <span className="label">Starting from:</span>
                     <span className="value">{trip.start_location_name}</span>
                   </div>
                   <div className="detail">
-                    <span className="label">⏰ Preferred hours:</span>
+                    <span className="label">Preferred hours:</span>
                     <span className="value">
                       {trip.preferred_start_time} - {trip.preferred_end_time}
                     </span>
@@ -308,21 +308,21 @@ function TripsList({ onEditTrip, onCreateNew }) {
                     onClick={() => onEditTrip(trip)}
                     className="edit-btn"
                   >
-                    ✏️ Edit
+                    Edit
                   </button>
                   
                   <button 
                     onClick={() => handleViewSchedule(trip)}
                     className="schedule-btn"
                   >
-                    📅 Schedule
+                    Schedule
                   </button>
                   
                   <button 
                     onClick={() => handleDelete(trip.id, trip.title)}
                     className="delete-btn"
                   >
-                    🗑️ Delete
+                    Delete
                   </button>
                 </div>
                 
@@ -338,7 +338,7 @@ function TripsList({ onEditTrip, onCreateNew }) {
             <div className="schedule-modal-overlay" onClick={() => setSelectedTrip(null)}>
               <div className="schedule-modal" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
-                  <h2>📅 Schedule for {selectedTrip.title}</h2>
+                  <h2>Schedule for {selectedTrip.title}</h2>
                   <button 
                     onClick={() => setSelectedTrip(null)}
                     className="close-btn"
@@ -359,13 +359,13 @@ function TripsList({ onEditTrip, onCreateNew }) {
                         <div key={day.day_number} className="day-schedule">
                           <h3>Day {day.day_number} - {formatDate(day.date)}</h3>
                           <div style={{ display: 'flex', gap: 8, margin: '8px 0 16px 0' }}>
-                            <button
+                              <button
                               onClick={() => openDayInGoogleMaps(day)}
                               className="schedule-btn"
                               disabled={openingMap}
                               title="Open this day's route in Google Maps"
                             >
-                              🗺️ Open shortest route
+                              Open shortest route
                             </button>
                             <select
                               onChange={(e) => setManualOriginIdx(e.target.value === '' ? null : Number(e.target.value))}
@@ -395,7 +395,7 @@ function TripsList({ onEditTrip, onCreateNew }) {
                                   {item.item_type === 'location' && (
                                     <>
                                       <div className="item-header">
-                                        <span className="icon">📍</span>
+                                        <span className="icon"></span>
                                         <span className="name">{item.location.name}</span>
                                       </div>
                                       <div className="item-details">
@@ -408,7 +408,7 @@ function TripsList({ onEditTrip, onCreateNew }) {
                                   {item.item_type === 'travel' && (
                                     <>
                                       <div className="item-header">
-                                        <span className="icon">🚗</span>
+                                        <span className="icon"></span>
                                         <span className="name">Travel to {item.to_location}</span>
                                       </div>
                                       <div className="item-details">
@@ -420,7 +420,7 @@ function TripsList({ onEditTrip, onCreateNew }) {
                                   {item.item_type === 'break' && (
                                     <>
                                       <div className="item-header">
-                                        <span className="icon">☕</span>
+                                        <span className="icon"></span>
                                         <span className="name">{item.description}</span>
                                       </div>
                                     </>

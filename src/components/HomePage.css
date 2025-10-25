@@ -1,0 +1,347 @@
+/* GeoAuthentic HomePage Redesign */
+.geoauth-home {
+  font-family: 'Inter', 'Montserrat', Arial, sans-serif;
+  background: #f8f9fb;
+  color: #1a2233;
+}
+
+.geoauth-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 48px 16px 48px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+}
+.geoauth-header .logo {
+  font-size: 1.5rem;
+  color: #1a2233;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.geoauth-header nav {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.geoauth-header nav a {
+  color: #1a2233;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: color 0.2s;
+}
+.geoauth-header nav a:hover {
+  color: #b48a3c;
+}
+.geoauth-header .sign-in {
+  background: #1a2233;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-left: 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.geoauth-header .sign-in:hover {
+  background: #b48a3c;
+  color: #fff;
+}
+
+/* right-side Plan Trip button removed (styles cleaned up) */
+
+.geoauth-hero {
+  background-size: cover;
+  background-position: center;
+  border-radius: 16px;
+  margin: 32px auto 0 auto;
+  max-width: 1100px;
+  min-height: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.07);
+}
+.hero-content {
+  background: rgba(26,34,51,0.55);
+  border-radius: 16px;
+  padding: 48px 32px;
+  text-align: center;
+  color: #fff;
+  width: 100%;
+  max-width: 700px;
+}
+.hero-content h1 {
+  font-size: 2.8rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+  line-height: 1.1;
+}
+.hero-content p {
+  font-size: 1.2rem;
+  margin-bottom: 32px;
+  font-weight: 400;
+}
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 32px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  padding: 4px 8px 4px 16px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.search-bar .search-icon {
+  font-size: 1.2rem;
+  color: #b48a3c;
+  margin-right: 8px;
+}
+.search-bar input {
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  flex: 1;
+  padding: 10px 8px;
+  background: transparent;
+}
+.search-bar button {
+  background: #1a2233;
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 8px 24px;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-left: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.search-bar button:hover {
+  background: #b48a3c;
+}
+
+.geoauth-intro {
+  text-align: center;
+  margin: 64px auto 32px auto;
+  max-width: 700px;
+}
+.geoauth-intro h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+.geoauth-intro p {
+  font-size: 1.1rem;
+  color: #444;
+  margin-bottom: 24px;
+}
+.geoauth-intro .learn-more {
+  background: #b48a3c;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 28px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.geoauth-intro .learn-more:hover {
+  background: #1a2233;
+}
+
+.geoauth-timeline {
+  background: #f3f4f6;
+  padding: 56px 0 32px 0;
+  margin: 0 0 32px 0;
+  text-align: center;
+}
+.geoauth-timeline h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.geoauth-timeline p {
+  color: #444;
+  margin-bottom: 32px;
+}
+.timeline-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.timeline-event {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+}
+.timeline-dot {
+  width: 18px;
+  height: 18px;
+  background: #b48a3c;
+  border-radius: 50%;
+  margin-top: 18px;
+  flex-shrink: 0;
+}
+.timeline-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 20px 32px;
+  text-align: left;
+  flex: 1;
+}
+.timeline-year {
+  color: #b48a3c;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+}
+.timeline-title {
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 6px;
+}
+.timeline-desc {
+  color: #333;
+  font-size: 1rem;
+}
+
+.geoauth-featured {
+  text-align: center;
+  margin: 56px auto 0 auto;
+  max-width: 1200px;
+}
+.geoauth-featured h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.geoauth-featured p {
+  color: #444;
+  margin-bottom: 32px;
+}
+.featured-grid {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.featured-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  padding: 0 0 18px 0;
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.featured-card:hover {
+  box-shadow: 0 8px 32px rgba(180,138,60,0.13);
+  transform: translateY(-4px) scale(1.03);
+}
+.featured-card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 16px 16px 0 0;
+}
+.featured-tag {
+  margin-top: 10px;
+  background: #f3f4f6;
+  color: #b48a3c;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  padding: 2px 12px;
+  display: inline-block;
+}
+.featured-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-top: 8px;
+}
+.featured-country {
+  color: #888;
+  font-size: 0.95rem;
+  margin-top: 2px;
+}
+
+.geoauth-footer {
+  background: #1a2233;
+  color: #fff;
+  margin-top: 56px;
+  padding: 40px 0 0 0;
+  font-size: 1rem;
+}
+.footer-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 48px 32px 48px;
+  flex-wrap: wrap;
+}
+.footer-logo {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.footer-tagline {
+  color: #bfc6d1;
+  font-size: 1rem;
+  margin-top: 6px;
+}
+.footer-cols {
+  display: flex;
+  gap: 48px;
+}
+.footer-title {
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #fff;
+  font-size: 1.05rem;
+}
+.footer-cols a {
+  color: #bfc6d1;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.98rem;
+  transition: color 0.2s;
+}
+.footer-cols a:hover {
+  color: #b48a3c;
+}
+.footer-bottom {
+  border-top: 1px solid #2c3447;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 18px 48px;
+  font-size: 0.97rem;
+}
+.footer-social a {
+  color: #bfc6d1;
+  margin-left: 18px;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.2s;
+}
+.footer-social a:hover {
+  color: #b48a3c;
+}

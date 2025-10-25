@@ -1,3 +1,4 @@
+/* This file has been removed as part of the new UI redesign. All UI is now handled by HomePage.css. */
 /* Auth Container - Travel Theme */
 .auth-container {
   min-height: 100vh;
@@ -31,136 +32,125 @@
   }
 }
 
-/* Auth Card - Travel Theme */
-.auth-card {
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(2, 6, 23, 0.25);
-  padding: 3rem;
-  max-width: 480px;
-  width: 100%;
-  position: relative;
-  z-index: 1;
-  animation: slideUp 0.6s ease-out;
-  border: 1px solid rgba(2, 6, 23, 0.08);
+/* Split layout for authentication pages */
+.auth-split-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background: #f7f7f7;
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
+.auth-split-left {
+  background: #fff;
+  border-radius: 32px 0 0 32px;
+  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.07);
+  padding: 56px 48px 48px 48px;
+  width: 420px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.auth-split-right {
+  background: #f7f7f7;
+  border-radius: 0 32px 32px 0;
+  width: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .auth-split-container {
+    flex-direction: column;
+    align-items: center;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  .auth-split-left, .auth-split-right {
+    width: 100vw;
+    border-radius: 0;
+    padding: 32px 12vw;
+  }
+  .auth-split-right {
+    min-height: 220px;
+    padding: 0;
   }
 }
 
-/* Auth Header - Travel Theme */
-.auth-header {
-  text-align: center;
-  margin-bottom: 2.5rem;
+@media (max-width: 600px) {
+  .auth-split-left, .auth-split-right {
+    padding: 24px 4vw;
+  }
+  .auth-split-right {
+    min-height: 120px;
+  }
 }
 
 .auth-header h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin: 0 0 0.5rem;
+  font-size: 2.3rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: #181818;
 }
 
 .auth-header p {
-  font-size: 1rem;
-  color: #64748b;
-  margin: 0;
+  color: #181818 !important;
+  font-size: 1.08rem;
+  margin-bottom: 32px;
 }
 
-/* Auth Form */
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 18px;
 }
-
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 6px;
 }
-
 .form-group label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #0f172a;
+  font-weight: 500;
+  color: #222;
+  margin-bottom: 2px;
 }
-
 .form-group input {
-  padding: 0.875rem 1rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  background: #ffffff;
-  color: #0f172a;
-}
-
-.form-group input:focus {
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  font-size: 1.1rem;
+  background: #fafafa;
   outline: none;
-  border-color: #0ea5e9;
-  background: white;
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+  transition: border 0.2s;
 }
-
+.form-group input:focus {
+  border: 1.5px solid #ff7a18;
+}
 .form-group input.error {
-  border-color: #ef4444;
-  background: #fef2f2;
+  border: 1.5px solid #ef4444;
 }
-
-.form-group input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 .error-message {
-  font-size: 0.85rem;
   color: #ef4444;
-  font-weight: 500;
+  font-size: 0.97rem;
+  margin-top: 2px;
 }
-
 .form-error {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #b91c1c;
-  padding: 0.875rem 1rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 500;
+  color: #ef4444;
+  font-size: 1.01rem;
+  margin-bottom: 8px;
+}
+.form-info {
+  color: #10b981;
+  font-size: 1.01rem;
+  margin-bottom: 8px;
 }
 
-/* Submit Button - Travel Theme */
-.auth-submit-btn {
-  padding: 1rem;
-  background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 8px 20px rgba(2,6,23,0.12);
-  margin-top: 0.5rem;
+/* Hide old card styles */
+.auth-container, .auth-card, .auth-footer, .btn, .btn-primary, .btn-secondary, .btn-link, .link-btn {
+  all: unset;
 }
 
-.auth-submit-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(2,6,23,0.18);
-  background: linear-gradient(135deg, #22c55e 0%, #0ea5e9 100%);
-}
-
-.auth-submit-btn:active:not(:disabled) {
-  transform: translateY(0);
-}
 
 .auth-submit-btn:disabled {
   opacity: 0.6;

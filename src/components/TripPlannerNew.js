@@ -159,7 +159,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
         id: editingTrip?.id || `trip-${Date.now()}`
       };
 
-      console.log('🚀 Generating smart schedule with real travel times...');
+  console.log('Generating smart schedule with real travel times...');
       const generatedSchedule = await generateSmartSchedule(tripWithLocations);
 
       const proceedToSave = () => {
@@ -806,7 +806,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                     border: `2px solid ${schedule.summary.isFeasible ? '#10b981' : '#ef4444'}`
                   }}>
                     <div style={{ fontWeight: 700, marginBottom: 4, color: schedule.summary.isFeasible ? '#065f46' : '#991b1b' }}>
-                      {schedule.summary.isFeasible ? '✅ All locations scheduled successfully!' : '⚠️ Partial Schedule - Not all locations could fit'}
+                      {schedule.summary.isFeasible ? 'All locations scheduled successfully!' : 'Partial Schedule - Not all locations could fit'}
                     </div>
                     <div style={{ fontSize: '0.9rem', color: schedule.summary.isFeasible ? '#047857' : '#dc2626' }}>
                       Covered: {schedule.summary.coveredLocations} / {schedule.summary.totalLocations} locations
@@ -854,7 +854,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                 })()}
 
                 <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                  <button
+                    <button
                     onClick={() => setShowMap(!showMap)}
                     style={{
                       padding: '0.75rem 1.5rem',
@@ -866,7 +866,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                       cursor: 'pointer'
                     }}
                   >
-                    {showMap ? '📍 Hide Map' : '🗺️ Show Route on Map'}
+                    {showMap ? 'Hide Map' : 'Show Route on Map'}
                   </button>
                   {tripProgress.total > 0 && (
                     <div style={{ padding: '0.75rem 1.5rem', background: '#f3f4f6', borderRadius: 50, fontWeight: 600 }}>
@@ -887,7 +887,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                 <div key={dayIdx} style={{ marginBottom: '2rem', background: '#f9fafb', padding: '1.5rem', borderRadius: 16, border: '2px solid #e5e7eb' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                     <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: '#1f2937' }}>
-                      📅 Day {day.day_number} - {day.date}
+                      Day {day.day_number} - {day.date}
                     </h3>
                     {day.summary && (
                       <div style={{ fontSize: '0.85rem', color: '#6b7280', fontWeight: 600 }}>
@@ -933,8 +933,8 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                           }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                               <div>
-                                <div style={{ fontWeight: 600, color: '#92400e', fontSize: '0.9rem' }}>
-                                  🚗 {item.description}
+                                      <div style={{ fontWeight: 600, color: '#92400e', fontSize: '0.9rem' }}>
+                                  {item.description}
                                 </div>
                                 <div style={{ fontSize: '0.85rem', color: '#78350f', marginTop: 4 }}>
                                   {item.start_time} - {item.end_time} • {formatDistance(item.distance)} • {formatDuration(item.duration_minutes)}
@@ -953,14 +953,14 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                           }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: 12 }}>
                               <div style={{ flex: 1 }}>
-                                <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#1f2937', marginBottom: 4 }}>
-                                  📍 {item.location.name}
+                                  <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#1f2937', marginBottom: 4 }}>
+                                  {item.location.name}
                                 </div>
                                 <div style={{ fontSize: '0.9rem', color: '#6b7280', marginBottom: 6 }}>
-                                  ⏰ {item.start_time} - {item.end_time} ({formatDuration(item.duration_minutes)})
+                                  {item.start_time} - {item.end_time} ({formatDuration(item.duration_minutes)})
                                 </div>
                                 <div style={{ fontSize: '0.85rem', color: '#8b5e34' }}>
-                                  📌 {item.location.district}
+                                  {item.location.district}
                                 </div>
                               </div>
                               {createdTrip && (
@@ -979,7 +979,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                                     whiteSpace: 'nowrap'
                                   }}
                                 >
-                                  {item.visited ? '✓ Visited' : 'Mark Visited'}
+                                  {item.visited ? 'Visited' : 'Mark Visited'}
                                 </button>
                               )}
                             </div>
@@ -992,7 +992,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                   {/* Day Summary */}
                   {day.summary && (
                     <div style={{ marginTop: 16, padding: '1rem', background: '#fff', borderRadius: 12, border: '2px solid #e5e7eb' }}>
-                      <div style={{ fontWeight: 700, marginBottom: 6, color: '#1f2937' }}>📊 Day Summary:</div>
+                      <div style={{ fontWeight: 700, marginBottom: 6, color: '#1f2937' }}>Day Summary:</div>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 8, fontSize: '0.85rem' }}>
                         <div>
                           <span style={{ color: '#6b7280' }}>Locations:</span>

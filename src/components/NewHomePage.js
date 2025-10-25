@@ -1,3 +1,4 @@
+// This component has been removed as part of the new UI redesign. All UI is now handled by HomePage.js.
 import React, { useState, useEffect } from 'react';
 import { getAllGILocations } from '../services/giyatraApi';
 import SafeImage from './SafeImage';
@@ -14,19 +15,40 @@ function NewHomePage({ onNavigate }) {
       title: "Explore Karnataka's Geographical Indications",
       subtitle: "Discover authentic GI products and unique locations across 30 districts",
       gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-      icon: "🏛️"
+  icon: ""
     },
     {
       title: "Navigate Karnataka's GI Landscape",
       subtitle: "From Mysore Silk to Channapatna Toys - authentic regional products",
       gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-      icon: "🗺️"
+  icon: ""
     },
     {
       title: "Discover Geographical Indications Map",
       subtitle: "Plan your journey through Karnataka's protected cultural products",
       gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-      icon: "📍"
+  icon: ""
+    }
+  ];
+
+  const topFeatures = [
+    {
+      id: 1,
+      img: 'https://tse2.mm.bing.net/th/id/OIP.mrJ_PZA1-ttCGAD7GfZIFgHaFj?rs=1&pid=ImgDetMain&o=7&rm=3',
+      title: 'Navigate Karnataka\'s GI Landscape',
+      subtitle: 'From Mysore Silk to Channapatna Toys - authentic regional products'
+    },
+    {
+      id: 2,
+      img: 'https://tse2.mm.bing.net/th/id/OIP.mrJ_PZA1-ttCGAD7GfZIFgHaFj?rs=1&pid=ImgDetMain&o=7&rm=3',
+      title: 'Discover Geographical Indications',
+      subtitle: 'Map and background about GIs'
+    },
+    {
+      id: 3,
+      img: 'https://tse2.mm.bing.net/th/id/OIP.mrJ_PZA1-ttCGAD7GfZIFgHaFj?rs=1&pid=ImgDetMain&o=7&rm=3',
+      title: 'Explore Karnataka\'s Geographical Indications',
+      subtitle: 'Discover authentic GI products and unique locations.'
     }
   ];
 
@@ -64,21 +86,21 @@ function NewHomePage({ onNavigate }) {
 
   const features = [
     {
-      icon: "�",
+      icon: "",
       title: "GI Locations",
       description: "Discover authentic Geographical Indication products and their origins",
       action: () => onNavigate('locations'),
       color: "#667eea"
     },
     {
-      icon: "🗺️",
+      icon: "",
       title: "GI Route Planning",
       description: "Create itineraries to explore Karnataka's protected regional products",
       action: () => onNavigate('trips'),
       color: "#f093fb"
     },
     {
-      icon: "🏪",
+      icon: "",
       title: "GI Services",
       description: "Find authentic GI product stores, artisans, and certified sellers",
       action: () => onNavigate('services'),
@@ -88,54 +110,20 @@ function NewHomePage({ onNavigate }) {
 
   return (
     <div className="new-homepage">
-      {/* Dynamic Hero Section */}
-      <section className="dynamic-hero">
-        <div 
-          className="hero-background"
-          style={{
-            transform: `translate(${mousePosition.x}px, ${mousePosition.y}px)`,
-            background: heroSlides[currentSlide].gradient
-          }}
-        />
-        
-        <div className="hero-content-wrapper">
-          <div className="hero-icon">{heroSlides[currentSlide].icon}</div>
-          <h1 className="hero-title">{heroSlides[currentSlide].title}</h1>
-          <p className="hero-subtitle">{heroSlides[currentSlide].subtitle}</p>
-          
-          <div className="hero-actions">
-            <button 
-              className="btn-primary"
-              onClick={() => onNavigate('trips')}
-            >
-              Start Planning
-              <span className="btn-arrow">→</span>
-            </button>
-            <button 
-              className="btn-secondary"
-              onClick={() => onNavigate('locations')}
-            >
-              Explore Locations
-            </button>
-          </div>
-
-          <div className="slide-indicators">
-            {heroSlides.map((_, index) => (
-              <button
-                key={index}
-                className={`indicator ${index === currentSlide ? 'active' : ''}`}
-                onClick={() => setCurrentSlide(index)}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Floating Elements */}
-        <div className="floating-elements">
-          <div className="float-element float-1">�</div>
-          <div className="float-element float-2">🗺️</div>
-          <div className="float-element float-3">🏪</div>
-          <div className="float-element float-4">📍</div>
+      {/* Top three feature cards (image row) */}
+      <section className="top-features">
+        <div className="top-features-inner">
+          {topFeatures.map((f) => (
+            <div key={f.id} className="top-feature-card">
+              <div className="tf-image">
+                <SafeImage src={f.img} alt={f.title} />
+              </div>
+              <div className="tf-content">
+                <h3 className="tf-title">{f.title}</h3>
+                <p className="tf-sub">{f.subtitle}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -165,20 +153,19 @@ function NewHomePage({ onNavigate }) {
         </div>
       </section>
 
-      {/* Featured Locations */}
+      {/* Featured GI Products */}
       {!loading && locations.length > 0 && (
         <section className="featured-locations">
           <div className="section-header">
-            <h2>Popular Destinations</h2>
-            <p>Explore these amazing places in Karnataka</p>
+            <h2>Featured GI Products</h2>
           </div>
 
-          <div className="locations-carousel">
-            {locations.slice(0, 8).map((location, index) => (
+          <div className="locations-carousel" style={{gridTemplateColumns: 'repeat(4, 1fr)'}}>
+            {locations.slice(0, 4).map((location, index) => (
               <div 
                 key={location.id} 
                 className="location-card"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                style={{ animationDelay: `${index * 0.05}s` }}
                 onClick={() => onNavigate('locations')}
               >
                 <div className="location-image">
@@ -186,32 +173,21 @@ function NewHomePage({ onNavigate }) {
                     src={location.image_url || location.image || `https://source.unsplash.com/400x300/?karnataka,gi,product,${location.name}`}
                     alt={location.name}
                   />
-                  <div className="location-overlay">
-                    <button className="visit-btn">Visit →</button>
-                  </div>
                 </div>
                 <div className="location-info">
                   <h4>{location.name}</h4>
-                  <p className="location-district">📍 {location.district_name || location.district}</p>
-                  <div className="location-badges">
-                    <span
-                      className={`badge ${
-                        (location.sellable_quantity == null)
-                          ? 'badge--secondary'
-                          : 'badge--success'
-                      }`}
-                    >
-                      {location.sellable_quantity == null
-                        ? 'Not for sale'
-                        : `${location.sellable_quantity} available`}
-                    </span>
-                  </div>
+                  <p className="location-district">{location.description ? location.description.slice(0,80) + '...' : (location.district_name || location.district)}</p>
+                  <div style={{marginTop:8, fontSize: '0.85rem', color:'#6b7280'}}>Artisan: {location.artisan || location.contact_name || 'N/A'}</div>
                 </div>
               </div>
             ))}
           </div>
         </section>
       )}
+
+
+
+
 
       {/* How It Works */}
       <section className="how-it-works">
@@ -223,7 +199,7 @@ function NewHomePage({ onNavigate }) {
         <div className="steps-grid">
           <div className="step-card">
             <div className="step-number">1</div>
-            <div className="step-icon">📍</div>
+            <div className="step-icon"></div>
             <h3>Choose Locations</h3>
             <p>Browse and select the places you want to visit from our curated list</p>
           </div>
@@ -232,7 +208,7 @@ function NewHomePage({ onNavigate }) {
           
           <div className="step-card">
             <div className="step-number">2</div>
-            <div className="step-icon">🗓️</div>
+            <div className="step-icon"></div>
             <h3>Create Itinerary</h3>
             <p>Our smart algorithm creates an optimized schedule for your trip</p>
           </div>
@@ -241,7 +217,7 @@ function NewHomePage({ onNavigate }) {
           
           <div className="step-card">
             <div className="step-number">3</div>
-            <div className="step-icon">✈️</div>
+            <div className="step-icon"></div>
             <h3>Start Exploring</h3>
             <p>Follow your personalized itinerary and track your progress</p>
           </div>

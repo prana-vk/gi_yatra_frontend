@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { signup, login, logout, getCurrentUser } from '../services/giyatraApi';
+import { signup, login, logout, getCurrentUser, signupConfirmOtp } from '../services/giyatraApi';
 
 const AuthContext = createContext();
 
@@ -57,6 +57,28 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Confirm signup using SPA OTP confirm endpoint. This returns the token on success
+  const handleSignupConfirmOtp = async (email, otp, password) => {
+    try {
+      const data = await signupConfirmOtp(email, otp, password);
+      const newToken = data.token;
+      localStorage.setItem('auth_token', newToken);
+      setToken(newToken);
+
+      // Fetch user data after signup
+      const userData = await getCurrentUser();
+      setUser(userData);
+
+      return { success: true };
+    } catch (error) {
+      console.error('Signup (OTP confirm) failed:', error);
+      return {
+        success: false,
+        error: error.response?.data || { detail: 'Signup failed. Please try again.' }
+      };
+    }
+  };
+
   const handleLogin = async (email, password) => {
     try {
       const data = await login(email, password);
@@ -73,7 +95,10 @@ export const AuthProvider = ({ children }) => {
       console.error('Login failed:', error);
       return { 
         success: false, 
-        error: error.response?.data || { detail: 'Login failed. Please check your credentials.' }
+        error: {
+          ...(error.response?.data || { detail: 'Login failed. Please check your credentials.' }),
+          status: error.response?.status
+        }
       };
     }
   };
@@ -97,6 +122,7 @@ export const AuthProvider = ({ children }) => {
     loading,
     isAuthenticated: !!token && !!user,
     signup: handleSignup,
+    signupConfirmOtpFlow: handleSignupConfirmOtp,
     login: handleLogin,
     logout: handleLogout,
   };

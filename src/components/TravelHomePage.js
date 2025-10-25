@@ -1,3 +1,4 @@
+// This component has been removed as part of the new UI redesign. All UI is now handled by HomePage.js.
 import React from "react";
 import { motion } from "framer-motion";
 

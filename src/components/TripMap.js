@@ -113,45 +113,44 @@ function TripMap({ trip, schedule, onClose }) {
       <div className="map-content">
         <div className="map-header">
           <div className="header-content">
-            <h2>🗺️ {trip?.title || 'Trip Route'}</h2>
+            <h2>{trip?.title || 'Trip Route'}</h2>
             <p>Opening route in your device's map app...</p>
           </div>
           {typeof onClose === 'function' && (
             <button onClick={onClose} className="close-map-btn" title="Close">
-              ✕
             </button>
           )}
         </div>
         
         <div className="map-info-card">
-          <div className="info-icon">🧭</div>
+          <div className="info-icon"></div>
           <h3>Route Opened in Native Maps</h3>
           <p>The complete trip route with all locations is now opening in your device's map application</p>
           
           <div className="map-features">
             <div className="feature-item">
-              <span className="feature-icon">🎯</span>
+              <span className="feature-icon"></span>
               <div className="feature-text">
                 <strong>Turn-by-turn</strong>
                 <span>Navigation</span>
               </div>
             </div>
             <div className="feature-item">
-              <span className="feature-icon">🚗</span>
+              <span className="feature-icon"></span>
               <div className="feature-text">
                 <strong>Real-time</strong>
                 <span>Traffic updates</span>
               </div>
             </div>
             <div className="feature-item">
-              <span className="feature-icon">📍</span>
+              <span className="feature-icon"></span>
               <div className="feature-text">
                 <strong>Offline maps</strong>
                 <span>Support</span>
               </div>
             </div>
             <div className="feature-item">
-              <span className="feature-icon">🔊</span>
+              <span className="feature-icon"></span>
               <div className="feature-text">
                 <strong>Voice</strong>
                 <span>Guidance</span>
@@ -160,12 +159,12 @@ function TripMap({ trip, schedule, onClose }) {
           </div>
 
           <button onClick={openInNativeMap} className="reopen-map-btn">
-            🔄 Reopen Map
+            Reopen Map
           </button>
         </div>
         
         <div className="map-footer">
-          <p className="footer-note">💡 No API keys required - uses your device's built-in maps</p>
+          <p className="footer-note">No API keys required - uses your device's built-in maps</p>
         </div>
       </div>
     </div>

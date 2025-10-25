@@ -10,10 +10,10 @@ function ProtectedRoute({ children, onNavigate }) {
         justifyContent: 'center', 
         alignItems: 'center', 
         minHeight: '400px',
-        color: '#8B4513'
+  color: '#222'
       }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏛️</div>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}></div>
           <div>Loading...</div>
         </div>
       </div>
@@ -30,16 +30,16 @@ function ProtectedRoute({ children, onNavigate }) {
         minHeight: '400px',
         padding: '3rem',
         textAlign: 'center',
-        background: '#F5DEB3',
+  background: '#fff',
         borderRadius: '16px',
         margin: '2rem auto',
         maxWidth: '600px'
       }}>
-        <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔒</div>
-        <h2 style={{ color: '#8B4513', marginBottom: '1rem', fontSize: '1.75rem' }}>
+  <div style={{ fontSize: '4rem', marginBottom: '1rem' }}></div>
+  <h2 style={{ color: '#222', marginBottom: '1rem', fontSize: '1.75rem' }}>
           Authentication Required
         </h2>
-        <p style={{ color: '#A0826D', marginBottom: '2rem', fontSize: '1.1rem' }}>
+  <p style={{ color: '#444', marginBottom: '2rem', fontSize: '1.1rem' }}>
           Please log in or sign up to access this feature and plan your GI journey.
         </p>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -47,8 +47,8 @@ function ProtectedRoute({ children, onNavigate }) {
             onClick={() => onNavigate && onNavigate('login')}
             style={{
               padding: '0.875rem 2rem',
-              background: '#D4A574',
-              color: '#4A3728',
+              background: '#f5f5f5',
+              color: '#222',
               border: 'none',
               borderRadius: '8px',
               fontSize: '1rem',
@@ -59,15 +59,15 @@ function ProtectedRoute({ children, onNavigate }) {
             }}
             onMouseOver={(e) => e.target.style.transform = 'translateY(-2px)'}
             onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
-          >
-            🔑 Log In
+            >
+            Log In
           </button>
           <button
             onClick={() => onNavigate && onNavigate('signup')}
             style={{
               padding: '0.875rem 2rem',
-              background: '#8B6F47',
-              color: '#F5DEB3',
+              background: '#222',
+              color: '#fff',
               border: 'none',
               borderRadius: '8px',
               fontSize: '1rem',
@@ -79,7 +79,7 @@ function ProtectedRoute({ children, onNavigate }) {
             onMouseOver={(e) => e.target.style.transform = 'translateY(-2px)'}
             onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
           >
-            ✨ Sign Up
+            Sign Up
           </button>
         </div>
       </div>

@@ -127,7 +127,7 @@ export const optimizeRoute = async (startLocation, locations) => {
   ];
   
   // Get travel time matrix
-  console.log('🗺️ Calculating travel times between locations...');
+  console.log('Calculating travel times between locations...');
   const travelMatrix = await getTravelTimeMatrix(allLocations);
   
   // Use nearest neighbor algorithm to optimize route
@@ -159,7 +159,7 @@ export const optimizeRoute = async (startLocation, locations) => {
   // Remove the starting point from optimized locations (keep it separate)
   const optimizedLocations = optimizedRoute.slice(0);
   
-  console.log('✅ Route optimized with travel times');
+  console.log('Route optimized with travel times');
   return { optimizedLocations, travelTimes };
 };
 

@@ -1,3 +1,4 @@
+/* This file has been removed as part of the new UI redesign. All UI is now handled by HomePage.css. */
 /* Modern, Human-Made Homepage Styles */
 
 .new-homepage {
@@ -11,12 +12,64 @@
 /* Dynamic Hero Section */
 .dynamic-hero {
   position: relative;
-  min-height: 85vh;
+  min-height: 0;
+  display: block;
+  color: inherit;
+}
+
+/* Top features row to match screenshot */
+.top-features {
+  padding: 36px 0 0 0;
+  background: #faf9f6;
+}
+.top-features-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+.top-feature-card {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  align-items: flex-start;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+  padding: 0 0 0.5rem 0;
+  border: 1px solid #ececec;
   overflow: hidden;
-  color: white;
+}
+.tf-image img {
+  width: 100%;
+  min-width: 320px;
+  max-width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 0;
+  display: block;
+}
+.tf-content {
+  padding: 18px 18px 10px 18px;
+  width: 100%;
+}
+.tf-number {
+  color: #181818;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 2px;
+}
+.tf-title {
+  font-size: 1.08rem;
+  margin: 0 0 4px 0;
+  color: #181818;
+  font-weight: 600;
+}
+.tf-sub {
+  color: #555;
+  font-size: 0.97rem;
+  margin: 0;
+  font-weight: 400;
 }
 
 .hero-background {
@@ -339,25 +392,26 @@
 
 /* Featured Locations */
 .featured-locations {
-  padding: 60px 20px;
-  background: #f8f9fa;
+  padding: 36px 0 0 0;
+  background: #faf9f6;
 }
 
 .locations-carousel {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 30px;
-  max-width: 1400px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
 .location-card {
-  background: white;
-  border-radius: 20px;
+  background: #fff;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  border: 1px solid #ececec;
+  box-shadow: none;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.2s, transform 0.2s;
   animation: slideIn 0.6s ease-out backwards;
 }
 
@@ -379,7 +433,8 @@
 
 .location-image {
   position: relative;
-  height: 200px;
+  width: 100%;
+  aspect-ratio: 1/1;
   overflow: hidden;
 }
 
@@ -388,6 +443,7 @@
   height: 100%;
   object-fit: cover;
   transition: transform 0.5s ease;
+  border-radius: 0;
 }
 
 .location-card:hover .location-image img {
@@ -427,19 +483,50 @@
 }
 
 .location-info {
-  padding: 20px;
+  padding: 18px 18px 10px 18px;
 }
 
 .location-info h4 {
-  font-size: 1.3rem;
-  color: #2d3748;
-  margin-bottom: 8px;
-  font-weight: 700;
+  font-size: 1.08rem;
+  color: #181818;
+  margin-bottom: 4px;
+  font-weight: 600;
 }
 
 .location-district {
-  color: #718096;
-  font-size: 0.95rem;
+  color: #555;
+  font-size: 0.97rem;
+  margin-bottom: 2px;
+}
+.explore-region {
+  padding: 36px 0 0 0;
+  background: #faf9f6;
+}
+.explore-region .section-header {
+  text-align: left;
+  margin-left: 0.5rem;
+}
+.explore-region img {
+  border-radius: 16px;
+  border: 1px solid #ececec;
+  box-shadow: none;
+}
+.about-us {
+  padding: 36px 0 0 0;
+  background: #fff;
+}
+.about-us h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #181818;
+  margin-bottom: 10px;
+  text-align: left;
+}
+.about-us p {
+  color: #444;
+  font-size: 1.01rem;
+  line-height: 1.7;
+  text-align: left;
 }
 
 /* Badges (shared look with GI Locations) */
@@ -477,21 +564,25 @@
 }
 
 .steps-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: stretch;
+  gap: 48px;
   max-width: 1200px;
   margin: 0 auto;
-  align-items: center;
 }
 
 .step-card {
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 30px;
+  padding: 30px 36px;
   border-radius: 20px;
   text-align: center;
   position: relative;
   transition: all 0.3s ease;
+  min-width: 320px;
+  max-width: 340px;
+  flex: 1 1 0;
 }
 
 .step-card:hover {
@@ -537,15 +628,17 @@
   color: #cbd5e0;
   text-align: center;
   font-weight: 800;
+  align-self: center;
+  margin: 0 24px;
 }
 
 /* CTA Section */
 .cta-section {
   padding: 60px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #fff;
   position: relative;
   overflow: hidden;
-  color: white;
+  color: #181818;
   text-align: center;
 }
 
@@ -560,28 +653,30 @@
   font-size: clamp(2rem, 4vw, 3rem);
   margin-bottom: 20px;
   font-weight: 800;
+  color: #181818;
 }
 
 .cta-content p {
   font-size: 1.3rem;
   margin-bottom: 40px;
-  opacity: 0.95;
+  opacity: 1;
+  color: #222;
 }
 
 .cta-button {
   padding: 20px 50px;
   font-size: 1.2rem;
   font-weight: 700;
-  background: white;
-  color: #667eea;
-  border: none;
+  background: #fff;
+  color: #181818;
+  border: 2px solid #ececec;
   border-radius: 50px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 12px;
   transition: all 0.3s ease;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
 }
 
 .cta-button:hover {

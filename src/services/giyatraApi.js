@@ -1,16 +1,84 @@
+// ========== GI LOCATIONS (MINIMAL) ==========
+
 import axios from 'axios';
 
-// Prefer relative URL in development so CRA proxy can avoid CORS/network issues
-const API_BASE_URL = process.env.NODE_ENV === 'development'
-  ? ''
-  : 'https://backend-k4x8.onrender.com';
+// --- runtime-configurable API base URL ---
+
+const STORAGE_KEY = 'giyatra_api_base';
+
+function buildDefaultBase() {
+  return 'https://backend-k4x8.onrender.com';
+}
+
+export function getApiBaseUrl() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) return stored;
+  } catch (e) {
+    // ignore storage errors
+  }
+  // allow explicit env override of full base URL
+  if (process.env.REACT_APP_API_BASE) return process.env.REACT_APP_API_BASE;
+  return 'https://backend-k4x8.onrender.com';
+}
+
+export function setApiBaseUrl(url) {
+  const normalized = (url || '').replace(/\/$/, '');
+  try {
+    localStorage.setItem(STORAGE_KEY, normalized);
+  } catch (e) {
+    // ignore
+  }
+  if (api) api.defaults.baseURL = normalized; // updated below when api exists
+  return normalized;
+}
+
+// If no stored API base and no env override, persist the provided default backend URL
+try {
+  const _stored = localStorage.getItem(STORAGE_KEY);
+  if (!_stored && !process.env.REACT_APP_API_BASE) {
+    // default backend provided by user
+    localStorage.setItem(STORAGE_KEY, 'https://backend-k4x8.onrender.com');
+  }
+} catch (e) {
+  // ignore storage errors
+}
+
+const API_BASE_URL = getApiBaseUrl();
+
+// Helper to get cookie value by name (for CSRF)
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+}
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Always send cookies
 });
+
+// ensure setApiBaseUrl updates this axios instance too
+export function _setApiInstanceBase(url) {
+  api.defaults.baseURL = url;
+}
+
+// Attach X-CSRFToken for all requests if cookie is present
+api.interceptors.request.use(
+  (config) => {
+    const csrfToken = getCookie('csrftoken');
+    if (csrfToken) {
+      config.headers['X-CSRFToken'] = csrfToken;
+    }
+    config.withCredentials = true;
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 // Add request interceptor to include auth token
 api.interceptors.request.use(
@@ -30,371 +98,95 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.response?.status === 429) {
+      error.message = 'Too many requests. Please wait a minute and try again.';
+    }
     console.error('API Error:', error.response?.data || error.message);
     return Promise.reject(error);
   }
 );
 
-// ========== AUTHENTICATION ==========
+// Fetch CSRF token on app load (for local dev)
+export async function ensureCsrfToken() {
+  try {
+    await api.get('/api/auth/csrf/');
+  } catch (e) {
+    // Ignore errors
+  }
+}
+
+// ========== AUTH & USER ENDPOINTS ==========
 
 export const signup = async (email, password) => {
-  try {
-    const response = await api.post('/api/auth/signup/', {
-      email,
-      password,
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Signup error:', error);
-    throw error;
-  }
+  const response = await api.post('/api/auth/signup/', { email, password });
+  return response.data;
 };
 
 export const login = async (email, password) => {
-  try {
-    const response = await api.post('/api/auth/login/', {
-      email,
-      password,
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Login error:', error);
-    throw error;
-  }
+  const response = await api.post('/api/auth/login/', { email, password });
+  return response.data;
 };
 
 export const logout = async () => {
-  try {
-    const response = await api.post('/api/auth/logout/');
-    return response.data;
-  } catch (error) {
-    console.error('Logout error:', error);
-    throw error;
-  }
+  const response = await api.post('/api/auth/logout/');
+  return response.data;
 };
 
 export const getCurrentUser = async () => {
-  try {
-    const response = await api.get('/api/auth/me/');
-    return response.data;
-  } catch (error) {
-    console.error('Get current user error:', error);
-    throw error;
-  }
+  const response = await api.get('/api/auth/me/');
+  return response.data;
 };
 
-// ========== GI LOCATIONS ==========
+// ========== PASSWORD RESET (TOKEN LINK) ==========
 
-export const getAllGILocations = async (params = {}) => {
-  try {
-    console.log('🌐 Fetching GI Locations from backend...');
-    const response = await api.get('/api/gi-locations/', { params });
-    console.log('✅ Backend Response:', response.data);
-    return response.data;
-  } catch (error) {
-    console.error('❌ Error fetching GI locations:', error);
-    console.error('Error details:', error.response?.data || error.message);
-    throw error;
-  }
+export const requestPasswordReset = async (email) => {
+  const response = await api.post('/api/auth/password-reset/', { email });
+  return response.data;
 };
 
-export const getGILocationById = async (id) => {
-  try {
-    const response = await api.get(`/api/gi-locations/${id}/`);
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching location ${id}:`, error);
-    throw error;
-  }
+export const passwordResetConfirm = async (email, token, password) => {
+  const response = await api.post('/api/auth/password-reset/confirm/', { email, token, password });
+  return response.data;
 };
 
-export const createGILocation = async (data) => {
-  try {
-    const response = await api.post('/api/gi-locations/', data);
-    return response.data;
-  } catch (error) {
-    console.error('Error creating location:', error);
-    throw error;
-  }
+// ========== OTP-BASED SPA ENDPOINTS ==========
+
+export const signupRequestOtp = async (email) => {
+  const response = await api.post('/api/auth/api/signup/request-otp/', { email });
+  return response.data;
 };
 
-export const createGILocationWithImage = async (formData) => {
-  try {
-    const response = await api.post('/api/gi-locations/', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error creating location with image:', error);
-    throw error;
-  }
+export const signupConfirmOtp = async (email, otp, password) => {
+  const response = await api.post('/api/auth/api/signup/confirm-otp/', { email, otp, password });
+  return response.data;
 };
 
-export const updateGILocation = async (id, data) => {
-  try {
-    const response = await api.patch(`/api/gi-locations/${id}/`, data);
-    return response.data;
-  } catch (error) {
-    console.error(`Error updating location ${id}:`, error);
-    throw error;
-  }
+export const passwordResetRequestOtp = async (email) => {
+  const response = await api.post('/api/auth/api/password-reset/request-otp/', { email });
+  return response.data;
 };
 
-export const deleteGILocation = async (id) => {
-  try {
-    await api.delete(`/api/gi-locations/${id}/`);
-    return true;
-  } catch (error) {
-    console.error(`Error deleting location ${id}:`, error);
-    throw error;
-  }
+export const passwordResetConfirmOtp = async (email, otp, new_password) => {
+  const response = await api.post('/api/auth/api/password-reset/confirm-otp/', { email, otp, new_password });
+  return response.data;
 };
 
-export const searchGILocations = async (searchTerm) => {
-  try {
-    const response = await api.get('/api/gi-locations/', {
-      params: { search: searchTerm }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error searching locations:', error);
-    throw error;
-  }
-};
+// ========== CSRF TOKEN ==========
 
-export const filterGILocationsByDistrict = async (district) => {
-  try {
-    const response = await api.get('/api/gi-locations/', {
-      params: { district }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error filtering by district:', error);
-    throw error;
-  }
-};
-
-export const getAllDistricts = async () => {
-  try {
-    const response = await api.get('/api/gi-locations/districts/');
-    console.log('Districts API Response:', response.data);
-    return response.data.districts || [];
-  } catch (error) {
-    console.error('Error fetching districts:', error);
-    // Return empty array as fallback
-    return [];
-  }
-};
-
-export const getLocationsByDistrict = async () => {
-  try {
-    const response = await api.get('/api/gi-locations/by_district/');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching grouped locations:', error);
-    throw error;
-  }
-};
-
-// ========== AD LOCATIONS ==========
-
-export const getAllAdLocations = async (params = {}) => {
-  try {
-    const response = await api.get('/api/ad-locations/', { params });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching ad locations:', error);
-    throw error;
-  }
-};
-
-export const getAdLocationById = async (id) => {
-  try {
-    const response = await api.get(`/api/ad-locations/${id}/`);
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching ad location ${id}:`, error);
-    throw error;
-  }
-};
-
-export const createAdLocation = async (data) => {
-  try {
-    const response = await api.post('/api/ad-locations/', data);
-    return response.data;
-  } catch (error) {
-    console.error('Error creating ad location:', error);
-    throw error;
-  }
-};
-
-export const updateAdLocation = async (id, data) => {
-  try {
-    const response = await api.patch(`/api/ad-locations/${id}/`, data);
-    return response.data;
-  } catch (error) {
-    console.error(`Error updating ad location ${id}:`, error);
-    throw error;
-  }
-};
-
-export const deleteAdLocation = async (id) => {
-  try {
-    await api.delete(`/api/ad-locations/${id}/`);
-    return true;
-  } catch (error) {
-    console.error(`Error deleting ad location ${id}:`, error);
-    throw error;
-  }
-};
-
-export const filterAdLocationsByService = async (serviceType) => {
-  try {
-    const response = await api.get('/api/ad-locations/', {
-      params: { service_type: serviceType }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error filtering by service type:', error);
-    throw error;
-  }
-};
-
-export const getAllServiceTypes = async () => {
-  try {
-    const response = await api.get('/api/ad-locations/service_types/');
-    return response.data.service_types;
-  } catch (error) {
-    console.error('Error fetching service types:', error);
-    throw error;
-  }
-};
-
-export const getLocationsByServiceType = async () => {
-  try {
-    const response = await api.get('/api/ad-locations/by_service_type/');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching grouped ad locations:', error);
-    throw error;
-  }
-};
-
-// ========== TRIP PLANNING ==========
-
-export const getAllTrips = async () => {
-  try {
-    const response = await api.get('/api/trips/');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching trips:', error);
-    throw error;
-  }
-};
-
-export const getTripById = async (id) => {
-  try {
-    const response = await api.get(`/api/trips/${id}/`);
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching trip ${id}:`, error);
-    throw error;
-  }
-};
-
-export const createTrip = async (data) => {
-  try {
-    const response = await api.post('/api/trips/', data);
-    return response.data;
-  } catch (error) {
-    console.error('Error creating trip:', error);
-    throw error;
-  }
-};
-
-export const updateTrip = async (id, data) => {
-  try {
-    const response = await api.patch(`/api/trips/${id}/`, data);
-    return response.data;
-  } catch (error) {
-    console.error(`Error updating trip ${id}:`, error);
-    throw error;
-  }
-};
-
-export const deleteTrip = async (id) => {
-  try {
-    await api.delete(`/api/trips/${id}/`);
-    return true;
-  } catch (error) {
-    console.error(`Error deleting trip ${id}:`, error);
-    throw error;
-  }
-};
-
-export const addLocationToTrip = async (tripId, locationId, priority = 1) => {
-  try {
-    const response = await api.post(`/api/trips/${tripId}/add_location/`, {
-      gi_location_id: locationId,
-      priority
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error adding location to trip:', error);
-    throw error;
-  }
-};
-
-export const removeLocationFromTrip = async (tripId, selectedLocationId) => {
-  try {
-    const response = await api.post(`/api/trips/${tripId}/remove_location/`, {
-      selected_location_id: selectedLocationId
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error removing location from trip:', error);
-    throw error;
-  }
-};
-
-export const generateTripSchedule = async (tripId) => {
-  try {
-    const response = await api.post(`/api/trips/${tripId}/generate_schedule/`);
-    return response.data;
-  } catch (error) {
-    console.error('Error generating schedule:', error);
-    throw error;
-  }
-};
-
-export const getTripSchedule = async (tripId) => {
-  try {
-    const response = await api.get(`/api/trips/${tripId}/schedule/`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching schedule:', error);
-    throw error;
-  }
-};
-
-export const getTripDays = async (tripId) => {
-  try {
-    const response = await api.get(`/api/trips/${tripId}/days/`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching trip days:', error);
-    throw error;
-  }
-};
-
-export const getSelectedLocations = async (tripId) => {
-  try {
-    const response = await api.get(`/api/trips/${tripId}/selected_locations/`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching selected locations:', error);
-    throw error;
-  }
+export const getCsrfToken = async () => {
+  const response = await api.get('/api/auth/csrf/');
+  return response.data;
 };
 
 export default api;
+
+// Expose main list utilities that rely on `api` (export after api is created)
+export const getAllGILocations = async (params = {}) => {
+  const response = await api.get('/api/gi-locations/', { params });
+  return response.data;
+};
+
+export const getAllDistricts = async () => {
+  const response = await api.get('/api/gi-locations/districts/');
+  return response.data.districts || [];
+};

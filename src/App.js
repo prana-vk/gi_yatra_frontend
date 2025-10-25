@@ -17,17 +17,17 @@ function AppContent() {
   const [activeSection, setActiveSection] = useState('home');
 
   const navigationItems = [
-    { key: 'home', icon: '🏠', label: 'Home', component: HomePage },
-    { key: 'locations', icon: '🏛️', label: 'GI Locations', component: GILocations },
-    { key: 'trips', icon: '🎒', label: 'Plan Trip', component: TripPlanning },
+    { key: 'home', label: 'Home', component: HomePage },
+    { key: 'locations', label: 'GI Locations', component: GILocations },
+    { key: 'trips', label: 'Plan Trip', component: TripPlanning },
     // Route Optimizer removed
   ];
 
   // Add auth pages to navigation when not authenticated
   if (!isAuthenticated) {
     navigationItems.push(
-      { key: 'login', icon: '🔑', label: 'Login', component: LoginPage },
-      { key: 'signup', icon: '✨', label: 'Sign Up', component: SignupPage }
+      { key: 'login', label: 'Login', component: LoginPage },
+      { key: 'signup', label: 'Sign Up', component: SignupPage }
     );
   }
 
@@ -44,25 +44,24 @@ function AppContent() {
       <header className="app-header">
         <div className="header-content">
           <div className="logo">
-            <h1>🗺️ GI Yatra</h1>
-            <p>Plan beautiful trips across Karnataka's GI destinations</p>
+            <h1>GI Yatra</h1>
+
           </div>
           <nav className="main-navigation">
-            {navigationItems.map(item => (
+            {navigationItems.filter(item => item.key !== 'login').map(item => (
               <button
                 key={item.key}
-                className={`nav-item ${activeSection === item.key ? 'active' : ''}`}
+                className={`nav-item ${item.key === 'locations' ? 'cta' : ''} ${activeSection === item.key ? 'active' : ''}`}
                 onClick={() => setActiveSection(item.key)}
               >
-                <span className="nav-icon">{item.icon}</span>
                 <span className="nav-label">{item.label}</span>
               </button>
             ))}
             {isAuthenticated && (
               <div className="user-menu">
-                <span className="user-greeting">👋 {user?.username}</span>
+                <span className="user-greeting"> {user?.username}</span>
                 <button onClick={handleLogout} className="logout-btn">
-                  🚪 Logout
+                   Logout
                 </button>
               </div>
             )}
@@ -89,34 +88,34 @@ function AppContent() {
 
       {/* Promo Section */}
       <div style={{
-        background: 'linear-gradient(90deg, #d4b483 0%, #b08968 100%)',
+        background: '#f5f5f5',
         padding: '1rem 0',
         overflow: 'hidden',
-        borderTop: '1px solid rgba(255,255,255,0.2)',
-        borderBottom: '1px solid rgba(255,255,255,0.2)'
+        borderTop: '1px solid #ececec',
+        borderBottom: '1px solid #ececec'
       }}>
-        <div className="promo-ticker" aria-live="polite">
-          <div className="ticker-track">
-            <span>✨ Plan your perfect Karnataka itinerary — smart routes, real travel times, beautiful trips.</span>
-            <span aria-hidden="true">✨ Plan your perfect Karnataka itinerary — smart routes, real travel times, beautiful trips.</span>
+          <div className="promo-ticker" aria-live="polite">
+            <div className="ticker-track">
+              <span style={{color:'#181818'}}>Plan your perfect Karnataka itinerary — smart routes, real travel times, beautiful trips.</span>
+              <span aria-hidden="true" style={{color:'#181818'}}>Plan your perfect Karnataka itinerary — smart routes, real travel times, beautiful trips.</span>
+            </div>
           </div>
-        </div>
       </div>
 
       {/* Footer */}
       <footer className="app-footer">
         <div className="footer-content">
           <div className="footer-section">
-            <h3>🏛️ GI Yatra</h3>
+            <h3>GI Yatra</h3>
             <p>Your guide to Karnataka's geographical indication locations and authentic GI products.</p>
           </div>
           <div className="footer-section">
             <h4>Features</h4>
             <ul>
-              <li>📍 Explore GI locations</li>
-              <li>🏨 Find local services</li>
-              <li>🗺️ Plan smart trips</li>
-              <li>📅 AI-powered scheduling</li>
+              <li> Explore GI locations</li>
+              <li> Find local services</li>
+              <li> Plan smart trips</li>
+              <li> AI-powered scheduling</li>
             </ul>
           </div>
           <div className="footer-section">
@@ -151,7 +150,7 @@ function AppContent() {
           </div>
         </div>
         <div className="footer-bottom">
-          <p>&copy; 2025 GI Yatra. Made with ❤️ for Karnataka's Geographical Indications.</p>
+          <p>&copy; 2025 GI Yatra. Made with love for Karnataka's Geographical Indications.</p>
         </div>
       </footer>
     </div>

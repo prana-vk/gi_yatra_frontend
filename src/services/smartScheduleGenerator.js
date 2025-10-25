@@ -16,7 +16,7 @@ export const generateSmartSchedule = async (trip) => {
       throw new Error('No locations selected for trip');
     }
     
-    console.log('🗓️ Generating smart schedule with real travel times...');
+  console.log('Generating smart schedule with real travel times...');
     
     const { 
       num_days = 3, 
@@ -33,7 +33,7 @@ export const generateSmartSchedule = async (trip) => {
     const [endHour, endMin] = preferred_end_time.split(':').map(Number);
     const dailyMinutes = (endHour * 60 + endMin) - (startHour * 60 + startMin);
     
-    console.log(`📊 Available time: ${dailyMinutes} mins/day (${num_days} days)`);
+  console.log(`Available time: ${dailyMinutes} mins/day (${num_days} days)`);
     
     // Sort locations by priority
     const sortedLocations = [...selectedLocations].sort((a, b) => 
@@ -219,16 +219,16 @@ export const generateSmartSchedule = async (trip) => {
       schedule.summary.isFeasible = false;
       schedule.summary.uncoveredLocations = optimizedLocations.slice(locationIndex).map(loc => loc.name);
       schedule.summary.warnings.push(
-        `❌ Cannot cover all locations! ${optimizedLocations.length - locationIndex} location(s) not scheduled: ${schedule.summary.uncoveredLocations.join(', ')}`
+        `Cannot cover all locations! ${optimizedLocations.length - locationIndex} location(s) not scheduled: ${schedule.summary.uncoveredLocations.join(', ')}`
       );
     } else {
       schedule.summary.isFeasible = true;
       schedule.summary.warnings.push(
-        `✅ All ${optimizedLocations.length} locations successfully scheduled!`
+        `All ${optimizedLocations.length} locations successfully scheduled!`
       );
     }
     
-    console.log('✅ Smart schedule generated:', schedule);
+    console.log('Smart schedule generated:', schedule);
     return schedule;
     
   } catch (error) {

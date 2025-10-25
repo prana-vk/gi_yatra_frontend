@@ -1,207 +1,171 @@
-import React, { useState, useEffect } from 'react';
-import { giProducts, karnatakaDistricts, giCategories } from '../data/karnatakaData';
-import '../styles/HomePage.css';
+import React, { useEffect, useState } from 'react';
+import './HomePage.css';
+import { getAllGILocations } from '../services/giyatraApi';
 
-const HomePage = ({ onNavigate }) => {
-  const [currentProductIndex, setCurrentProductIndex] = useState(0);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+// Fallback image when backend doesn't provide one
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80';
+
+const timelineEvents = [
+  {
+    year: '15th Century',
+    title: 'Roquefort Cheese',
+    desc: 'The Parliament of Toulouse in France grants a monopoly for the ripening of Roquefort cheese to the people of Roquefort-sur-Soulzon, one of the earliest known protections of a geographical name.',
+  },
+  {
+    year: '1883',
+    title: 'The Paris Convention',
+    desc: 'The Paris Convention for the Protection of Industrial Property is signed, laying the groundwork for international protection of intellectual property, including indications of source.',
+  },
+  {
+    year: '1994',
+    title: 'TRIPS Agreement',
+    desc: 'The WTO’s Agreement on Trade-Related Aspects of Intellectual Property Rights (TRIPS) sets global minimum standards for GI protection, solidifying their international importance.',
+  },
+];
+
+const HomePage = () => {
+  const [locations, setLocations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentProductIndex((prev) => (prev + 1) % giProducts.length);
-    }, 4000);
-
-    return () => clearInterval(interval);
+    let mounted = true;
+    const load = async () => {
+      setLoading(true);
+      try {
+        const data = await getAllGILocations();
+        if (mounted) setLocations(Array.isArray(data) ? data : []);
+      } catch (e) {
+        console.error('Failed to load GI locations', e);
+        if (mounted) setError('Unable to load locations');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+    load();
+    return () => { mounted = false; };
   }, []);
 
-  const filteredProducts = giProducts.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.district.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
-
-  const currentProduct = giProducts[currentProductIndex];
-
   return (
-    <div className="homepage">
-      {/* Animated Background */}
-      <div className="animated-background">
-        <div className="floating-images">
-          {giProducts.map((product, index) => (
-            <div
-              key={product.id}
-              className={`floating-item ${index === currentProductIndex ? 'active' : ''}`}
-              style={{
-                animationDelay: `${index * 0.5}s`,
-                left: `${(index * 15) % 100}%`,
-                top: `${(index * 8) % 80 + 10}%`
-              }}
-            >
-              <img src={product.image} alt={product.name} />
-            </div>
-          ))}
+    <div className="geoauth-home">
+      {/* Small compact right-aligned nav (short labels, small height) */}
+      {/* right-side Plan Trip button removed per request */}
+
+    {/* Hero Section */}
+    <section className="geoauth-hero" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80)' }}>
+      <div className="hero-content">
+        <h1>Discover the World&apos;s<br />Authentic Treasures</h1>
+        <p>Explore products protected by geographical indications, celebrated for their unique origin and quality.</p>
+        <div className="search-bar">
+          <span className="search-icon">🔍</span>
+          <input type="text" placeholder="Search for a product, region, or country..." />
+          <button>Search</button>
         </div>
-        <div className="gradient-overlay"></div>
       </div>
+    </section>
 
-      {/* Hero Section */}
-      <section className="hero-section">
-        <div className="hero-content">
-          <h1 className="hero-title">
-            Discover Karnataka's
-            <span className="highlight"> Geographical Indications</span>
-          </h1>
-          <p className="hero-description">
-            Explore authentic products, rich culture, and geographical treasures 
-            from across Karnataka's 30 districts
-          </p>
-          
-          <div className="hero-actions">
-            <button 
-              className="start-journey-hero"
-              onClick={() => onNavigate && onNavigate('route')}
-            >
-              🗺️ Start Your Journey
-            </button>
-            <button 
-              className="explore-locations"
-              onClick={() => onNavigate && onNavigate('locations')}
-            >
-              🏛️ Explore Locations
-            </button>
-          </div>
-          
-          <div className="featured-product">
-            <div className="product-showcase">
-              <img 
-                src={currentProduct.image} 
-                alt={currentProduct.name}
-                className="showcase-image"
-              />
-              <div className="product-info">
-                <h3>{currentProduct.name}</h3>
-                <p className="district">📍 {currentProduct.district}</p>
-                <p className="description">{currentProduct.description}</p>
-                <span className="category-tag">{currentProduct.category}</span>
-              </div>
+    {/* Intro Section */}
+    <section className="geoauth-intro" id="about">
+      <h2>What is a Geographical Indication?</h2>
+      <p>Geographical Indications (GIs) are signs used on products that have a specific geographical origin and possess qualities or a reputation that are due to that origin. They are a mark of authenticity and a guarantee of quality, connecting products directly to the traditions and environment of their homeland.</p>
+      <button className="learn-more">Learn More</button>
+    </section>
+
+    {/* Timeline Section */}
+    <section className="geoauth-timeline" id="history">
+      <h2>A Journey Through Time</h2>
+      <p>The concept of protecting products based on origin is centuries old. Explore the milestones that shaped the world of Geographical Indications.</p>
+      <div className="timeline-list">
+        {timelineEvents.map((event, idx) => (
+          <div className="timeline-event" key={event.year}>
+            <div className="timeline-dot" />
+            <div className="timeline-card">
+              <div className="timeline-year">{event.year}</div>
+              <div className="timeline-title">{event.title}</div>
+              <div className="timeline-desc">{event.desc}</div>
             </div>
           </div>
-        </div>
-      </section>
+        ))}
+      </div>
+    </section>
 
-      {/* Search and Filter Section */}
-      <section className="search-section">
-        <div className="container">
-          <h2>Explore GI Products</h2>
-          <div className="search-controls">
-            <div className="search-box">
-              <input
-                type="text"
-                placeholder="Search products or districts..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              <span className="search-icon">🔍</span>
-            </div>
-            
-            <div className="category-filters">
-              <button
-                className={selectedCategory === 'all' ? 'active' : ''}
-                onClick={() => setSelectedCategory('all')}
-              >
-                All Categories
-              </button>
-              {giCategories.map(category => (
-                <button
-                  key={category.name}
-                  className={selectedCategory === category.name ? 'active' : ''}
-                  onClick={() => setSelectedCategory(category.name)}
-                  style={{ '--category-color': category.color }}
-                >
-                  <span className="category-icon">{category.icon}</span>
-                  {category.name}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+    {/* Itinerary heading (requested) */}
+    <section className="geoauth-itinerary" id="itinerary">
+      <h2>Itinerary</h2>
+    </section>
 
-      {/* Products Grid */}
-      <section className="products-section">
-        <div className="container">
-          <div className="products-grid">
-            {filteredProducts.map((product, index) => (
-              <div key={product.id} className="product-card" style={{animationDelay: `${index * 0.1}s`}}>
-                <div className="card-image">
-                  <img src={product.image} alt={product.name} />
-                  <div className="category-overlay">
-                    {giCategories.find(cat => cat.name === product.category)?.icon}
-                  </div>
+    {/* Featured GIs Section */}
+    <section className="geoauth-featured" id="explore">
+      <h2>Explore Featured GIs</h2>
+      <p>Discover iconic products celebrated for their unique origin and heritage.</p>
+
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '2rem' }}>Loading locations…</div>
+      ) : error ? (
+        <div style={{ textAlign: 'center', padding: '2rem', color: 'red' }}>{error}</div>
+      ) : (
+        <div className="featured-grid">
+          {locations.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '2rem' }}>No locations found.</div>
+          ) : (
+            locations.map((loc) => {
+              // defensive image selection from backend fields
+              const img = loc.image || loc.image_url || (loc.images && loc.images[0]) || FALLBACK_IMAGE;
+              const title = loc.name || loc.product_name || loc.title || 'Untitled';
+              const tag = (loc.category || loc.type || '').toUpperCase();
+              const meta = loc.district || loc.region || loc.country || '';
+
+              return (
+                <div className="featured-card" key={loc.id || title}>
+                  <img src={img} alt={title} onError={(e)=>{e.target.src=FALLBACK_IMAGE}} />
+                  {tag && <div className="featured-tag">{tag}</div>}
+                  <div className="featured-name">{title}</div>
+                  {meta && <div className="featured-country">{meta}</div>}
                 </div>
-                <div className="card-content">
-                  <h3>{product.name}</h3>
-                  <p className="district">📍 {product.district}</p>
-                  <p className="description">{product.description}</p>
-                  <div className="card-footer">
-                    <span className="category">{product.category}</span>
-                    <button className="learn-more">Learn More</button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+              );
+            })
+          )}
         </div>
-      </section>
+      )}
+    </section>
 
-      {/* Districts Section */}
-      <section className="districts-section">
-        <div className="container">
-          <h2>Karnataka Districts</h2>
-          <p>Explore all 30 districts of Karnataka and their unique GI products</p>
-          <div className="districts-grid">
-            {karnatakaDistricts.map((district, index) => (
-              <div 
-                key={district} 
-                className="district-card"
-                style={{animationDelay: `${index * 0.05}s`}}
-              >
-                <span className="district-name">{district}</span>
-                <div className="district-count">
-                  {giProducts.filter(p => p.district === district).length || 0} GI Products
-                </div>
-              </div>
-            ))}
+    {/* Footer */}
+    <footer className="geoauth-footer">
+      <div className="footer-main">
+        <div className="footer-logo">
+          <span role="img" aria-label="logo">📘</span> <b>GeoAuthentic</b>
+          <div className="footer-tagline">Your guide to the world&apos;s finest geographically indicated products.</div>
+        </div>
+        <div className="footer-cols">
+          <div>
+            <div className="footer-title">EXPLORE</div>
+            <a href="#">Products</a>
+            <a href="#">Regions</a>
+            <a href="#">Countries</a>
+          </div>
+          <div>
+            <div className="footer-title">COMPANY</div>
+            <a href="#about">About Us</a>
+            <a href="#history">History</a>
+            <a href="#contact">Contact</a>
+          </div>
+          <div>
+            <div className="footer-title">LEGAL</div>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
           </div>
         </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="stats-section">
-        <div className="container">
-          <div className="stats-grid">
-            <div className="stat-item">
-              <div className="stat-number">{giProducts.length}</div>
-              <div className="stat-label">GI Products</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number">{karnatakaDistricts.length}</div>
-              <div className="stat-label">Districts</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number">{giCategories.length}</div>
-              <div className="stat-label">Categories</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number">500+</div>
-              <div className="stat-label">Years of History</div>
-            </div>
-          </div>
+      </div>
+      <div className="footer-bottom">
+        <div>© 2024 GeoAuthentic. All rights reserved.</div>
+        <div className="footer-social">
+          <a href="#">Twitter</a>
+          <a href="#">Facebook</a>
+          <a href="#">Instagram</a>
         </div>
-      </section>
-    </div>
+      </div>
+    </footer>
+  </div>
   );
 };
 
