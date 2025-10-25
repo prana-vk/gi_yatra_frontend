@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import HomePage from './components/NewHomePage'; // Using new modern homepage
 import GILocations from './components/GILocations';
+import GILocationDetail from './components/GILocationDetail';
 import TripPlanning from './components/TripPlanning';
 import SignupPage from './components/SignupPage';
 import LoginPage from './components/LoginPage';
@@ -15,6 +16,7 @@ import './styles/App.css';
 function AppContent() {
   const { user, isAuthenticated, logout } = useAuth();
   const [activeSection, setActiveSection] = useState('home');
+  const [selectedLocation, setSelectedLocation] = useState(null);
 
   const navigationItems = [
     { key: 'home', label: 'Home', component: HomePage },
@@ -74,18 +76,26 @@ function AppContent() {
       </header>
 
       {/* Main Content */}
-      <main className="app-main">
+          <main className="app-main">
         <div className="main-content">
           {ActiveComponent && (
-            activeSection === 'home' ? 
-              <ActiveComponent onNavigate={setActiveSection} /> : 
-              activeSection === 'login' || activeSection === 'signup' ?
-              <ActiveComponent onNavigate={setActiveSection} /> :
-              activeSection === 'trips' || activeSection === 'locations' ?
+            activeSection === 'home' ? (
+              <ActiveComponent onNavigate={setActiveSection} />
+            ) : activeSection === 'login' || activeSection === 'signup' ? (
+              <ActiveComponent onNavigate={setActiveSection} />
+            ) : activeSection === 'trips' || activeSection === 'locations' ? (
               <ProtectedRoute onNavigate={setActiveSection}>
-                <ActiveComponent />
-              </ProtectedRoute> :
+                <ActiveComponent onNavigate={setActiveSection} setSelectedLocation={setSelectedLocation} />
+              </ProtectedRoute>
+            ) : (
               <ActiveComponent />
+            )
+          )}
+
+          {activeSection === 'locationDetail' && (
+            <ProtectedRoute onNavigate={setActiveSection}>
+              <GILocationDetail location={selectedLocation} onNavigate={setActiveSection} />
+            </ProtectedRoute>
           )}
         </div>
       </main>

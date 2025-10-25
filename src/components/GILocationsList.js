@@ -24,8 +24,25 @@ import '../styles/GILocations.css';
  * - Subtle framer-motion card animation
  */
 
-export default function GILocationsList() {
+export default function GILocationsList({ onNavigate, setSelectedLocation }) {
   const { locations = [], loading, error, retry, fetchLocations, lastFetchSource } = useGILocations();
+
+  const [expandedId, setExpandedId] = useState(null);
+
+  // shared button sizing so View on Map and Buy match visually
+  const buttonBaseStyle = {
+    borderRadius: 40,
+    padding: '6px 12px',
+    fontSize: '0.82rem',
+    minWidth: 96,
+    height: 36,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    cursor: 'pointer',
+    fontWeight: 700,
+  };
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredLocations, setFilteredLocations] = useState([]);
@@ -105,7 +122,7 @@ export default function GILocationsList() {
   const keyFor = (loc, idx) => loc.id ?? loc._id ?? `${loc.name ?? 'loc'}-${idx}`;
 
   return (
-    <div className="gi-locations-list" style={{ maxWidth: 1400, margin: '0 auto', padding: '2.5rem 1.5rem', background: 'linear-gradient(135deg, #f6eddc 0%, #ead9c0 100%)', minHeight: '100vh' }}>
+    <div className="gi-locations-list" style={{ maxWidth: 1200, margin: '0 auto', padding: '1.5rem', background: '#ffffff', minHeight: '100vh' }}>
       <Modal
         isOpen={purchaseModal.open}
         title={purchaseModal.loc ? `Buy ${purchaseModal.loc.name}` : 'Buy'}
@@ -134,11 +151,11 @@ export default function GILocationsList() {
         )}
       </Modal>
       {/* Header */}
-      <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-        <h1 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 800, color: '#fff', textShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: 800, color: '#0b0b0b' }}>
           Explore Karnataka's GI Locations
         </h1>
-        <p style={{ margin: '0.75rem 0 0', fontSize: '1.1rem', color: 'rgba(255,255,255,0.9)' }}>
+        <p style={{ margin: '0.5rem 0 0', fontSize: '1rem', color: '#444' }}>
           Discover authentic Geographical Indication sites across the state
         </p>
       </div>
@@ -151,17 +168,17 @@ export default function GILocationsList() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{
-            padding: '1rem 1.5rem',
-            borderRadius: 50,
-            border: 'none',
+            padding: '0.75rem 1rem',
+            borderRadius: 40,
+            border: '1px solid #e6eef6',
             maxWidth: 600,
             width: '100%',
-            fontSize: '1rem',
-            boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
+            fontSize: '0.95rem',
+            boxShadow: '0 6px 24px rgba(0,0,0,0.08)',
             outline: 'none',
           }}
         />
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center', color: '#fff', fontSize: '0.95rem' }}>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center', color: '#222', fontSize: '0.95rem' }}>
           <span style={{ fontWeight: 600 }}>
             {filteredLocations.length} {filteredLocations.length === 1 ? 'location' : 'locations'} found
           </span>
@@ -235,8 +252,8 @@ export default function GILocationsList() {
           className="locations-grid"
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-            gap: 20,
+            gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+            gap: 14,
           }}
         >
           {filteredLocations.map((location, idx) => {
@@ -245,6 +262,8 @@ export default function GILocationsList() {
             const badgeBg = getBadgeColor(location.sellable_quantity);
             const isSellable = typeof location.sellable_quantity === 'number' && location.sellable_quantity > 0;
 
+            const isExpanded = expandedId === key;
+
             return (
               <motion.article
                 key={key}
@@ -252,21 +271,31 @@ export default function GILocationsList() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: idx * 0.05 }}
-                whileHover={{ y: -6, boxShadow: '0 18px 50px rgba(0,0,0,0.22)' }}
+                whileHover={{ y: -4, boxShadow: '0 12px 36px rgba(0,0,0,0.16)' }}
                 className="location-card"
                 style={{
                   background: '#fff',
-                  borderRadius: 16,
+                  borderRadius: 12,
                   overflow: 'hidden',
-                  boxShadow: '0 15px 50px rgba(0,0,0,0.2)',
+                  boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
                   display: 'flex',
                   flexDirection: 'column',
                   cursor: 'pointer',
                 }}
                 aria-labelledby={`loc-title-${key}`}
+                onClick={() => {
+                  // If parent provided navigation setter, open detail page.
+                  if (typeof setSelectedLocation === 'function' && typeof onNavigate === 'function') {
+                    setSelectedLocation(location);
+                    onNavigate('locationDetail');
+                    return;
+                  }
+                  // Fallback: toggle expand state
+                  setExpandedId(isExpanded ? null : key);
+                }}
               >
                 {/* Image */}
-                <div style={{ position: 'relative', height: 160, background: 'linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ position: 'relative', height: isExpanded ? 220 : 120, background: 'linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'height 0.28s ease' }}>
                   <SafeImage
                     src={location.image_url || location.image}
                     alt={location.name || 'location image'}
@@ -296,19 +325,19 @@ export default function GILocationsList() {
                 </div>
 
                 {/* Content */}
-                <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: 10, flex: 1 }}>
-                  <h3 id={`loc-title-${key}`} style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, color: '#1f2937', lineHeight: 1.3 }}>
+                <div style={{ padding: isExpanded ? '0.75rem 0.9rem' : '0.6rem 0.75rem', display: 'flex', flexDirection: 'column', gap: 8, flex: 1, transition: 'padding 0.2s' }}>
+                  <h3 id={`loc-title-${key}`} style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#000', lineHeight: 1.25 }}>
                     {location.name}
                   </h3>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#8b5e34', fontWeight: 600, fontSize: '0.9rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#000', fontWeight: 600, fontSize: '0.85rem' }}>
                     {location.district || '—'}
                   </div>
 
                   {/* Buy button moved to footer next to map */}
 
                   {location.description && (
-                    <p style={{ margin: 0, color: '#6b7280', fontSize: '0.9rem', lineHeight: 1.6, flex: 1 }}>
+                    <p style={{ margin: 0, color: '#333', fontSize: '0.88rem', lineHeight: 1.5, flex: 1, maxHeight: isExpanded ? 400 : 42, overflow: 'hidden', transition: 'max-height 0.28s ease' }}>
                       {location.description}
                     </p>
                   )}
@@ -316,39 +345,35 @@ export default function GILocationsList() {
                   {/* Footer meta */}
                   <div style={{ marginTop: 'auto', paddingTop: 12, borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span style={{ color: '#9ca3af', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase' }}>Duration</span>
-                      <span style={{ color: '#1f2937', fontWeight: 700, fontSize: '0.9rem' }}>{location.typical_visit_duration ?? '—'} mins</span>
+                      <span style={{ color: '#9ca3af', fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase' }}>Duration</span>
+                      <span style={{ color: '#111', fontWeight: 700, fontSize: '0.85rem' }}>{location.typical_visit_duration ?? '—'} mins</span>
                     </div>
 
                     {location.opening_time && location.closing_time && (
-                      <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'right' }}>
-                        <span style={{ color: '#9ca3af', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase' }}>Hours</span>
-                        <span style={{ color: '#1f2937', fontWeight: 700, fontSize: '0.9rem' }}>{`${location.opening_time} - ${location.closing_time}`}</span>
+                        <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'right' }}>
+                        <span style={{ color: '#9ca3af', fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase' }}>Hours</span>
+                        <span style={{ color: '#111', fontWeight: 700, fontSize: '0.85rem' }}>{`${location.opening_time} - ${location.closing_time}`}</span>
                       </div>
                     )}
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginLeft: 'auto' }}>
                       <button
                         aria-label={`View ${location.name} on map`}
-                        onClick={() => openMap(location.latitude, location.longitude, location.name)}
+                        onClick={(e) => { e.stopPropagation(); openMap(location.latitude, location.longitude, location.name); }}
                         style={{
-                          background: '#1f2937',
+                          ...buttonBaseStyle,
+                          background: '#111',
                           color: '#fff',
-                          borderRadius: 50,
-                          padding: '8px 16px',
                           border: 'none',
-                          cursor: 'pointer',
-                          fontWeight: 700,
-                          fontSize: '0.85rem',
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                          transition: 'all 0.2s',
+                          boxShadow: '0 6px 18px rgba(0,0,0,0.12)',
+                          transition: 'all 0.16s',
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = '#374151';
-                          e.currentTarget.style.transform = 'scale(1.05)';
+                          e.currentTarget.style.background = '#222';
+                          e.currentTarget.style.transform = 'scale(1.03)';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = '#1f2937';
+                          e.currentTarget.style.background = '#111';
                           e.currentTarget.style.transform = 'scale(1)';
                         }}
                       >
@@ -359,27 +384,18 @@ export default function GILocationsList() {
                         <button
                           type="button"
                           className="buy-btn"
+                          onClick={(e) => { e.stopPropagation(); openPurchase(location); }}
                           style={{
+                            ...buttonBaseStyle,
                             background: 'linear-gradient(90deg,#10b981,#059669)',
                             color: '#fff',
-                            borderRadius: 50,
                             border: 'none',
-                            padding: '8px 16px',
-                            fontWeight: 700,
-                            fontSize: '0.85rem',
-                            cursor: 'pointer',
-                            boxShadow: '0 8px 22px rgba(16,185,129,0.28)',
-                            transition: 'all 0.2s',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: 8
+                            boxShadow: '0 6px 18px rgba(16,185,129,0.22)',
+                            transition: 'all 0.16s',
                           }}
-                          onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
-                          onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-                          onClick={() => openPurchase(location)}
                         >
                           <span role="img" aria-label="cart">🛒</span>
-                          Buy ({location.sellable_quantity})
+                          Buy
                         </button>
                       )}
                     </div>

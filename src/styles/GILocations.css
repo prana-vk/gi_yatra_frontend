@@ -3,6 +3,31 @@
    GI LOCATIONS STYLES
    =============================================== */
 
+/* Override: make primary content text black to remove brown accents */
+.gi-locations-list h1,
+.gi-locations-list h2,
+.gi-locations-list h3,
+.gi-locations-list p,
+.gi-locations-list .results-info p,
+.gi-locations-list .location-content h3,
+.gi-locations-list .location-content .district,
+.gi-locations-list .location-content .description,
+.gi-locations-list .detail .label,
+.gi-locations-list .detail .value,
+.gi-locations-list .page-info,
+.gi-locations-list .controls,
+.gi-locations-list .results-info {
+  color: #000 !important;
+}
+
+/* Keep badges and buttons their own colors */
+.gi-locations-list .badge,
+.gi-locations-list .buy-btn,
+.gi-locations-list .view-btn,
+.gi-locations-list .search-btn {
+  color: inherit;
+}
+
 .gi-locations-main,
 .gi-locations-container {
   animation: fadeIn 0.5s ease-in;
@@ -396,6 +421,54 @@
 .page-info {
   font-weight: 500;
   color: #4a5568;
+}
+
+/* Detail page layout: text on left, image on right */
+.gi-location-detail-card {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 1.25rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+}
+
+.gi-location-detail-layout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.gi-location-detail-content {
+  flex: 1 1 auto;
+}
+
+.gi-location-detail-image {
+  flex: 0 0 420px;
+  max-width: 45%;
+  height: 320px;
+  overflow: hidden;
+  border-radius: 8px;
+}
+.gi-location-detail-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.gi-location-detail-empty {
+  max-width: 800px;
+  margin: 3rem auto;
+  padding: 2rem;
+  text-align: center;
+  background: #fff;
+  border-radius: 12px;
+}
+
+@media (max-width: 800px) {
+  .gi-location-detail-layout { flex-direction: column; }
+  .gi-location-detail-image { width: 100%; height: 220px; max-width: 100%; }
 }
 
 /* ===============================================
