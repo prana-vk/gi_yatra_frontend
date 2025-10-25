@@ -248,8 +248,6 @@ export const generateLocalSchedule = (trip) => {
       num_days = 3, 
       preferred_start_time = '09:00',
       preferred_end_time = '18:00',
-      start_location_latitude,
-      start_location_longitude,
       selectedLocations 
     } = trip;
     
@@ -257,7 +255,7 @@ export const generateLocalSchedule = (trip) => {
     const [startHour, startMin] = preferred_start_time.split(':').map(Number);
     const [endHour, endMin] = preferred_end_time.split(':').map(Number);
     const dailyMinutes = (endHour * 60 + endMin) - (startHour * 60 + startMin);
-    const dailyHours = dailyMinutes / 60;
+  // dailyHours intentionally unused; compute only if needed
     
     // Sort locations by priority
     const sortedLocations = [...selectedLocations].sort((a, b) => 

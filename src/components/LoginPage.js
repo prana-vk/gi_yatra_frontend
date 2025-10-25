@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Modal from './Modal';
-import { requestPasswordReset, passwordResetRequestOtp } from '../services/giyatraApi';
+import { passwordResetRequestOtp, passwordResetConfirmOtp } from '../services/giyatraApi';
 import '../styles/Auth.css';
 const loginImage = 'https://mapacademy.io/wp-content/uploads/2023/11/channapatna-toys-1l.jpg';
 
@@ -15,10 +15,52 @@ function LoginPage({ onNavigate }) {
     }
     try {
       setResetLoading(true);
-      await requestPasswordReset(resetEmail);
-      setResetSuccess({ success: true, message: 'A password reset link has been sent to your email.' });
+      // Use OTP-based password reset request (backend configured to generate OTP)
+      const resp = await passwordResetRequestOtp(resetEmail);
+      // Backend returns a generic message and may include expires_at
+  setResetSuccess({ success: true, message: resp?.message || 'Email sent', expires_at: resp?.expires_at });
+      // move to confirm step so user can enter code + new password
+      setResetStep('confirm');
     } catch (error) {
-      setResetSuccess({ success: false, message: 'Could not send reset email. Please try again.' });
+      const data = error?.response?.data || {};
+      const serverMsg = data.error || data.detail || data.message || '';
+      if (error.response?.status === 404) {
+        setResetSuccess({ success: false, message: serverMsg || 'This email is not found in database' });
+        setResetErrors({ email: serverMsg || 'Email not found' });
+      } else {
+        setResetSuccess({ success: false, message: serverMsg || 'Could not request reset code. Please try again.' });
+      }
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
+  const handleResetConfirm = async (e) => {
+    e.preventDefault();
+    const errs = {};
+    if (!resetOtp || !/^\d{6}$/.test(resetOtp)) errs.otp = 'Enter the 6-digit code';
+    if (!resetNewPassword) errs.new_password = 'New password is required';
+    else if (resetNewPassword.length < 6) errs.new_password = 'Password must be at least 6 characters';
+    if (resetNewPassword !== resetConfirmPassword) errs.confirm = 'Passwords do not match';
+    setResetErrors(errs);
+    if (Object.keys(errs).length) return;
+
+    try {
+      setResetLoading(true);
+      const resp = await passwordResetConfirmOtp(resetEmail, resetOtp, resetNewPassword);
+      setResetSuccess({ success: true, message: resp?.message || 'Password has been reset successfully.' });
+      setTimeout(() => setResetModalOpen(false), 900);
+    } catch (error) {
+      const data = error?.response?.data || {};
+      const serverMsg = data.error || data.detail || data.message || '';
+      if (error.response?.status === 404) {
+        setResetSuccess({ success: false, message: serverMsg || 'This email is not found in database' });
+        setResetErrors({ email: serverMsg || 'Email not found' });
+      } else {
+        const msg = serverMsg || 'Could not reset password. Please check the code and try again.';
+        setResetSuccess({ success: false, message: msg });
+        if (data?.errors) setResetErrors(data.errors);
+      }
     } finally {
       setResetLoading(false);
     }
@@ -30,17 +72,19 @@ function LoginPage({ onNavigate }) {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [modal, setModal] = useState({ open: false, title: '', content: null, actions: [] });
-  const [forgotMode, setForgotMode] = useState(false);
-  const [forgotEmail, setForgotEmail] = useState('');
-  const [forgotLoading, setForgotLoading] = useState(false);
-  const [forgotSuccess, setForgotSuccess] = useState(null);
+  // modal state removed — not used in this component
 
   // Add missing state for reset password modal
   const [resetModalOpen, setResetModalOpen] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetLoading, setResetLoading] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(null);
+
+  const [resetStep, setResetStep] = useState('request'); // 'request' | 'confirm'
+  const [resetOtp, setResetOtp] = useState('');
+  const [resetNewPassword, setResetNewPassword] = useState('');
+  const [resetConfirmPassword, setResetConfirmPassword] = useState('');
+  const [resetErrors, setResetErrors] = useState({});
 
 
   // Add missing handleChange for form inputs
@@ -49,15 +93,17 @@ function LoginPage({ onNavigate }) {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const openModal = (title, content, actions = []) => setModal({ open: true, title, content, actions });
-  const closeModal = () => setModal(m => ({ ...m, open: false }));
+  // modal setter kept for potential use by other helpers
 
-
-  const openForgotModal = (email = '') => {
-    setForgotMode(true);
-    setForgotEmail(email);
-    setForgotSuccess(null);
-    openModal('Reset password', null, []);
+  const openResetModal = (email = '') => {
+    setResetEmail(email || '');
+    setResetStep('request');
+    setResetOtp('');
+    setResetNewPassword('');
+    setResetConfirmPassword('');
+    setResetErrors({});
+    setResetSuccess(null);
+    setResetModalOpen(true);
   };
 
   // Add missing handleSubmit for login
@@ -71,10 +117,36 @@ function LoginPage({ onNavigate }) {
         setLoading(false);
         return;
       }
-      await login(formData.email, formData.password);
+      // AuthContext.login may either return an object { success: true } / { success: false, error }
+      // or throw an axios error — handle both cases.
+      const result = await login(formData.email, formData.password);
+
+      if (result && result.success === false) {
+        const err = result.error || {};
+        const status = err.status || err.statusCode || null;
+        const serverMsg = err.error || err.detail || err.message || '';
+
+        if (status === 404 || String(serverMsg).toLowerCase().includes('user does not exist')) {
+          setErrors({ detail: serverMsg || 'User does not exist. Please sign up.' });
+        } else {
+          setErrors({ detail: serverMsg || 'Login failed. Please check your credentials.' });
+        }
+        setLoading(false);
+        return;
+      }
+
+      // success path
       if (onNavigate) onNavigate('home');
     } catch (err) {
-      setErrors({ detail: err?.response?.data?.detail || 'Login failed. Please check your credentials.' });
+      // err may be an axios error with response
+      const resp = err?.response;
+      const respData = resp?.data || {};
+      const serverMsg = respData.error || respData.detail || respData.message || '';
+      if (resp?.status === 404 || String(serverMsg).toLowerCase().includes('user does not exist')) {
+        setErrors({ detail: serverMsg || 'User does not exist. Please sign up.' });
+      } else {
+        setErrors({ detail: serverMsg || 'Login failed. Please check your credentials.' });
+      }
     } finally {
       setLoading(false);
     }
@@ -117,7 +189,7 @@ function LoginPage({ onNavigate }) {
             {errors.password && <span className="error-message">{errors.password}</span>}
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: -6 }}>
-            <button type="button" onClick={() => setResetModalOpen(true)} className="link-btn" style={{ fontSize: '0.95rem' }}>Forgot password?</button>
+            <button type="button" onClick={() => openResetModal(formData.email)} className="link-btn" style={{ fontSize: '0.95rem' }}>Forgot password?</button>
           </div>
           {errors.detail && (
             <div className="form-error">{errors.detail}</div>
@@ -137,19 +209,46 @@ function LoginPage({ onNavigate }) {
         <img src={loginImage} alt="Login visual" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:32}} />
       </div>
       <Modal isOpen={resetModalOpen} title="Reset password" onClose={() => setResetModalOpen(false)} actions={[]}>
-        <form onSubmit={handleResetSubmit}>
-          <div className="form-group">
-            <label htmlFor="resetEmail">Email</label>
-            <input id="resetEmail" name="resetEmail" type="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} placeholder="your@email.com" disabled={resetLoading} />
-          </div>
-          {resetSuccess && (
-            <div style={{ marginBottom: 12, color: resetSuccess.success ? '#10b981' : '#ef4444' }}>{resetSuccess.message}</div>
-          )}
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-            <button type="button" onClick={() => setResetModalOpen(false)} className="btn btn-secondary">Cancel</button>
-            <button type="submit" disabled={resetLoading} className="btn btn-primary">{resetLoading ? 'Sending...' : 'Send reset email'}</button>
-          </div>
-        </form>
+        {resetStep === 'request' ? (
+          <form onSubmit={handleResetSubmit}>
+            <div className="form-group">
+              <label htmlFor="resetEmail">Email</label>
+              <input id="resetEmail" name="resetEmail" type="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} placeholder="your@email.com" disabled={resetLoading} />
+            </div>
+            {resetSuccess && (
+              <div style={{ marginBottom: 12, color: resetSuccess.success ? '#10b981' : '#ef4444' }}>{resetSuccess.message}</div>
+            )}
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <button type="button" onClick={() => setResetModalOpen(false)} className="btn btn-secondary">Cancel</button>
+              <button type="submit" disabled={resetLoading} className="btn btn-primary">{resetLoading ? 'Sending...' : 'Send reset code'}</button>
+            </div>
+          </form>
+        ) : (
+          <form onSubmit={handleResetConfirm}>
+            <div className="form-group">
+              <label htmlFor="resetOtp">Verification code</label>
+              <input id="resetOtp" name="resetOtp" type="text" value={resetOtp} onChange={(e) => setResetOtp(e.target.value)} placeholder="6-digit code" disabled={resetLoading} />
+              {resetErrors.otp && <div className="error-message">{resetErrors.otp}</div>}
+            </div>
+            <div className="form-group">
+              <label htmlFor="resetNewPassword">New password</label>
+              <input id="resetNewPassword" name="resetNewPassword" type="password" value={resetNewPassword} onChange={(e) => setResetNewPassword(e.target.value)} placeholder="New password" disabled={resetLoading} />
+              {resetErrors.new_password && <div className="error-message">{resetErrors.new_password}</div>}
+            </div>
+            <div className="form-group">
+              <label htmlFor="resetConfirmPassword">Confirm password</label>
+              <input id="resetConfirmPassword" name="resetConfirmPassword" type="password" value={resetConfirmPassword} onChange={(e) => setResetConfirmPassword(e.target.value)} placeholder="Confirm password" disabled={resetLoading} />
+              {resetErrors.confirm && <div className="error-message">{resetErrors.confirm}</div>}
+            </div>
+            {resetSuccess && (
+              <div style={{ marginBottom: 12, color: resetSuccess.success ? '#10b981' : '#ef4444' }}>{resetSuccess.message}</div>
+            )}
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <button type="button" onClick={() => setResetStep('request')} className="btn btn-secondary">Back</button>
+              <button type="submit" disabled={resetLoading} className="btn btn-primary">{resetLoading ? 'Resetting...' : 'Reset password'}</button>
+            </div>
+          </form>
+        )}
       </Modal>
     </div>
   );

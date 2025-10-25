@@ -6,9 +6,7 @@ import axios from 'axios';
 
 const STORAGE_KEY = 'giyatra_api_base';
 
-function buildDefaultBase() {
-  return 'https://backend-k4x8.onrender.com';
-}
+// buildDefaultBase removed (unused) — default base handled in getApiBaseUrl
 
 export function getApiBaseUrl() {
   try {

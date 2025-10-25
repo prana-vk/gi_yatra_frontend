@@ -7,8 +7,8 @@ import '../styles/NewHomePage.css';
 function NewHomePage({ onNavigate }) {
   const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [, setCurrentSlide] = useState(0);
+  const [, setMousePosition] = useState({ x: 0, y: 0 });
 
   const heroSlides = [
     {

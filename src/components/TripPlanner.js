@@ -346,44 +346,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
     );
   };
 
-  // Transform backend schedule to expected format
-  const transformScheduleData = (backendSchedule) => {
-    // Handle if backend returns nested schedule object
-    if (backendSchedule.schedule) {
-      return backendSchedule.schedule;
-    }
-    
-    // Ensure days array exists
-    if (!backendSchedule.days || !Array.isArray(backendSchedule.days)) {
-      console.warn('Invalid schedule format, creating empty structure');
-      return { days: [] };
-    }
-    
-    // Transform each day's items to ensure correct format
-    return {
-      ...backendSchedule,
-      days: backendSchedule.days.map(day => ({
-        ...day,
-        items: (day.items || []).map(item => ({
-          ...item,
-          // Ensure location object exists for location items
-          location: item.item_type === 'location' ? {
-            id: item.location?.id || item.gi_location?.id,
-            name: item.location?.name || item.gi_location?.name,
-            description: item.location?.description || item.gi_location?.description,
-            district: item.location?.district || item.gi_location?.district,
-            typical_visit_duration: item.location?.typical_visit_duration || item.gi_location?.typical_visit_duration || item.duration_minutes,
-            latitude: item.location?.latitude || item.gi_location?.latitude,
-            longitude: item.location?.longitude || item.gi_location?.longitude
-          } : undefined,
-          // For travel items, ensure we have the destination name
-          to_location: item.to_location || item.description?.replace('Travel to ', ''),
-          duration: item.duration_minutes || item.duration,
-          visited: item.visited || false
-        }))
-      }))
-    };
-  };
+  // transformScheduleData removed — previously unused helper
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-IN', {

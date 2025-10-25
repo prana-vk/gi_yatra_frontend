@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { signupRequestOtp, requestPasswordReset } from '../services/giyatraApi';
+import { signupRequestOtp, passwordResetRequestOtp, passwordResetConfirmOtp } from '../services/giyatraApi';
 import Modal from './Modal';
 import '../styles/Auth.css';
 const signupImage = 'https://mapacademy.io/wp-content/uploads/2023/11/channapatna-toys-1l.jpg';
@@ -25,6 +25,12 @@ function SignupPage({ onNavigate }) {
   const [resetEmail, setResetEmail] = useState('');
   const [resetLoading, setResetLoading] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(null);
+
+  const [resetStep, setResetStep] = useState('request');
+  const [resetOtp, setResetOtp] = useState('');
+  const [resetNewPassword, setResetNewPassword] = useState('');
+  const [resetConfirmPassword, setResetConfirmPassword] = useState('');
+  const [resetErrors, setResetErrors] = useState({});
 
   useEffect(() => {
     let timer;
@@ -61,15 +67,22 @@ function SignupPage({ onNavigate }) {
       setResendDisabled(true);
     } catch (error) {
       console.error('Signup OTP request failed:', error);
-      const errorMsg = error.response?.data?.error || error.response?.data?.detail || '';
-      const errorLower = errorMsg.toLowerCase();
-      
-      // Check if email already registered
-      if (errorLower.includes('already registered') || errorLower.includes('already exists') || errorLower.includes('email already')) {
+      const respData = error.response?.data || {};
+      const errorMsg = respData.error || respData.detail || '';
+
+      // If backend explicitly returns 409 for existing user, respect that message
+      if (error.response?.status === 409) {
         setErrors({ email: 'Email already registered' });
-        setRequestMessage('This email is already registered. Please log in instead.');
+        setRequestMessage(errorMsg || 'This email is already registered. Please log in instead.');
       } else {
-        setRequestMessage(errorMsg || 'Could not request code. Please try again later.');
+        const errorLower = String(errorMsg).toLowerCase();
+        // Fallback checks for older/different error text
+        if (errorLower.includes('already registered') || errorLower.includes('already exists') || errorLower.includes('email already')) {
+          setErrors({ email: 'Email already registered' });
+          setRequestMessage('This email is already registered. Please log in instead.');
+        } else {
+          setRequestMessage(errorMsg || 'Could not request code. Please try again later.');
+        }
       }
     } finally {
       setRequestLoading(false);
@@ -115,28 +128,28 @@ function SignupPage({ onNavigate }) {
       console.error('Signup confirm error:', error);
       const errData = error.response?.data || {};
       const errorMsg = errData.error || errData.detail || '';
-      const errorLower = errorMsg.toLowerCase();
-      
-      if (errorLower.includes('already registered') || errorLower.includes('already exists')) {
-        setErrors({ email: 'Email already registered', detail: 'This email is already registered. Please log in instead.' });
-      } else if (errorLower.includes('invalid') && errorLower.includes('code')) {
-        setErrors({ otp: 'Invalid verification code', detail: errData.remaining_attempts ? `${errData.remaining_attempts} attempts remaining` : '' });
-      } else if (errorLower.includes('expired')) {
-        setErrors({ otp: 'Code expired', detail: 'Please request a new verification code.' });
+
+      // If backend returns 409 explicitly, surface that as an "already registered" case
+      if (error.response?.status === 409) {
+        setErrors({ email: 'Email already registered', detail: errorMsg || 'This email is already registered. Please log in instead.' });
       } else {
-        setErrors({ detail: errorMsg || 'Signup failed. Please try again.' });
+        const errorLower = String(errorMsg).toLowerCase();
+        if (errorLower.includes('already registered') || errorLower.includes('already exists')) {
+          setErrors({ email: 'Email already registered', detail: 'This email is already registered. Please log in instead.' });
+        } else if (errorLower.includes('invalid') && errorLower.includes('code')) {
+          setErrors({ otp: 'Invalid verification code', detail: errData.remaining_attempts ? `${errData.remaining_attempts} attempts remaining` : '' });
+        } else if (errorLower.includes('expired')) {
+          setErrors({ otp: 'Code expired', detail: 'Please request a new verification code.' });
+        } else {
+          setErrors({ detail: errorMsg || 'Signup failed. Please try again.' });
+        }
       }
     } finally {
       setLoading(false);
     }
   };
 
-  const openResetModal = (email = '') => {
-    setResetEmail(email || formData.email || '');
-    setResetSuccess(null);
-    setResetModalOpen(true);
-  };
-
+  // Note: reset modal is opened directly by UI actions where needed
   const handleResetSubmit = async (e) => {
     e && e.preventDefault();
     if (!resetEmail || !/\S+@\S+\.\S+/.test(resetEmail)) {
@@ -145,11 +158,51 @@ function SignupPage({ onNavigate }) {
     }
     try {
       setResetLoading(true);
-      await requestPasswordReset(resetEmail);
-      setResetSuccess({ success: true, message: 'If an account exists for this email, you will receive password reset instructions.' });
+      const resp = await passwordResetRequestOtp(resetEmail);
+  setResetSuccess({ success: true, message: resp?.message || 'Email sent', expires_at: resp?.expires_at });
+      setResetStep('confirm');
     } catch (error) {
       console.error('Password reset request failed:', error);
-      setResetSuccess({ success: false, message: error.response?.data?.detail || 'Could not request password reset. Please try again later.' });
+      const data = error?.response?.data || {};
+      const serverMsg = data.error || data.detail || data.message || '';
+      if (error.response?.status === 404) {
+        // show backend 'email not found' message explicitly
+        setResetSuccess({ success: false, message: serverMsg || 'This email is not found in our database.' });
+        setResetErrors({ email: serverMsg || 'Email not found' });
+      } else {
+        setResetSuccess({ success: false, message: serverMsg || 'Could not request password reset. Please try again later.' });
+      }
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
+  const handleResetConfirm = async (e) => {
+    e && e.preventDefault();
+    const errs = {};
+    if (!resetOtp || !/^\d{6}$/.test(resetOtp)) errs.otp = 'Enter the 6-digit code';
+    if (!resetNewPassword) errs.new_password = 'New password is required';
+    else if (resetNewPassword.length < 6) errs.new_password = 'Password must be at least 6 characters';
+    if (resetNewPassword !== resetConfirmPassword) errs.confirm = 'Passwords do not match';
+    setResetErrors(errs);
+    if (Object.keys(errs).length) return;
+
+    try {
+      setResetLoading(true);
+      const resp = await passwordResetConfirmOtp(resetEmail, resetOtp, resetNewPassword);
+      setResetSuccess({ success: true, message: resp?.message || 'Password has been reset successfully.' });
+      setTimeout(() => setResetModalOpen(false), 900);
+    } catch (error) {
+      console.error('Password reset confirm failed:', error);
+      const data = error?.response?.data || {};
+      const serverMsg = data.error || data.detail || data.message || '';
+      if (error.response?.status === 404) {
+        setResetSuccess({ success: false, message: serverMsg || 'This email is not found in our database.' });
+        setResetErrors({ email: serverMsg || 'Email not found' });
+      } else {
+        setResetSuccess({ success: false, message: serverMsg || 'Could not reset password. Please try again.' });
+        if (data?.errors) setResetErrors(data.errors);
+      }
     } finally {
       setResetLoading(false);
     }
@@ -181,6 +234,9 @@ function SignupPage({ onNavigate }) {
             <button type="submit" disabled={requestLoading} style={{marginTop:24,background:'#ff7a18',color:'#fff',fontWeight:700,fontSize:'1.15rem',border:'none',borderRadius:16,padding:'1rem 0',width:'100%',boxShadow:'none'}}>
               {requestLoading ? 'Sending...' : 'Continue'}
             </button>
+            {requestMessage && (
+              <div style={{ marginTop: 12, color: '#0f172a', fontSize: '0.95rem' }}>{requestMessage}{expiresAt ? ` (expires at ${new Date(expiresAt).toLocaleString()})` : ''}</div>
+            )}
           </form>
         ) : (
           <form onSubmit={handleConfirm} className="auth-form">
@@ -241,19 +297,46 @@ function SignupPage({ onNavigate }) {
         <img src={signupImage} alt="Signup visual" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:32}} />
       </div>
       <Modal isOpen={resetModalOpen} title="Reset password" onClose={() => setResetModalOpen(false)} actions={[]}>
-        <form onSubmit={handleResetSubmit}>
-          <div className="form-group">
-            <label htmlFor="resetEmail">Email</label>
-            <input id="resetEmail" name="resetEmail" type="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} placeholder="your@email.com" disabled={resetLoading} />
-          </div>
-          {resetSuccess && (
-            <div style={{ marginBottom: 12, color: resetSuccess.success ? '#10b981' : '#ef4444' }}>{resetSuccess.message}</div>
-          )}
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-            <button type="button" onClick={() => setResetModalOpen(false)} className="btn btn-secondary">Cancel</button>
-            <button type="submit" disabled={resetLoading} className="btn btn-primary">{resetLoading ? 'Sending...' : 'Send reset email'}</button>
-          </div>
-        </form>
+        {resetStep === 'request' ? (
+          <form onSubmit={handleResetSubmit}>
+            <div className="form-group">
+              <label htmlFor="resetEmail">Email</label>
+              <input id="resetEmail" name="resetEmail" type="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} placeholder="your@email.com" disabled={resetLoading} />
+            </div>
+            {resetSuccess && (
+              <div style={{ marginBottom: 12, color: resetSuccess.success ? '#10b981' : '#ef4444' }}>{resetSuccess.message}</div>
+            )}
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <button type="button" onClick={() => setResetModalOpen(false)} className="btn btn-secondary">Cancel</button>
+              <button type="submit" disabled={resetLoading} className="btn btn-primary">{resetLoading ? 'Sending...' : 'Send reset code'}</button>
+            </div>
+          </form>
+        ) : (
+          <form onSubmit={handleResetConfirm}>
+            <div className="form-group">
+              <label htmlFor="resetOtp">Verification code</label>
+              <input id="resetOtp" name="resetOtp" type="text" value={resetOtp} onChange={(e) => setResetOtp(e.target.value)} placeholder="6-digit code" disabled={resetLoading} />
+              {resetErrors.otp && <div className="error-message">{resetErrors.otp}</div>}
+            </div>
+            <div className="form-group">
+              <label htmlFor="resetNewPassword">New password</label>
+              <input id="resetNewPassword" name="resetNewPassword" type="password" value={resetNewPassword} onChange={(e) => setResetNewPassword(e.target.value)} placeholder="New password" disabled={resetLoading} />
+              {resetErrors.new_password && <div className="error-message">{resetErrors.new_password}</div>}
+            </div>
+            <div className="form-group">
+              <label htmlFor="resetConfirmPassword">Confirm password</label>
+              <input id="resetConfirmPassword" name="resetConfirmPassword" type="password" value={resetConfirmPassword} onChange={(e) => setResetConfirmPassword(e.target.value)} placeholder="Confirm password" disabled={resetLoading} />
+              {resetErrors.confirm && <div className="error-message">{resetErrors.confirm}</div>}
+            </div>
+            {resetSuccess && (
+              <div style={{ marginBottom: 12, color: resetSuccess.success ? '#10b981' : '#ef4444' }}>{resetSuccess.message}</div>
+            )}
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <button type="button" onClick={() => setResetStep('request')} className="btn btn-secondary">Back</button>
+              <button type="submit" disabled={resetLoading} className="btn btn-primary">{resetLoading ? 'Resetting...' : 'Reset password'}</button>
+            </div>
+          </form>
+        )}
       </Modal>
     </div>
   );

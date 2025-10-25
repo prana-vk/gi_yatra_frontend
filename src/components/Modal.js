@@ -18,14 +18,9 @@ function Modal({ isOpen, title, children, actions = [], onClose }) {
           <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>{title}</h3>
         </div>
         <div style={{ padding: '1.25rem 1.5rem', color: '#334155' }}>{children}</div>
-        <div style={{ padding: '1rem 1.5rem', display: 'flex', gap: 8, justifyContent: 'flex-end', background: '#f8fafc' }}>
-          {actions.length === 0 ? (
-            <button
-              onClick={onClose}
-              style={{ padding: '0.75rem 1.25rem', borderRadius: 10, border: '1px solid #e2e8f0', background: '#fff', cursor: 'pointer', fontWeight: 700 }}
-            >OK</button>
-          ) : (
-            actions.map((a, i) => (
+        {actions.length > 0 && (
+          <div style={{ padding: '1rem 1.5rem', display: 'flex', gap: 8, justifyContent: 'flex-end', background: '#f8fafc' }}>
+            {actions.map((a, i) => (
               <button
                 key={i}
                 onClick={a.onClick}
@@ -38,9 +33,9 @@ function Modal({ isOpen, title, children, actions = [], onClose }) {
               >
                 {a.label}
               </button>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
