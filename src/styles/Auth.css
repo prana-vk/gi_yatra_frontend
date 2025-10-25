@@ -45,8 +45,9 @@
   background: #fff;
   border-radius: 32px 0 0 32px;
   box-shadow: 0 2px 16px 0 rgba(0,0,0,0.07);
-  padding: 56px 48px 48px 48px;
-  width: 420px;
+  /* reduced size by ~10% */
+  padding: 50px 43px 43px 43px;
+  width: 378px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -55,7 +56,8 @@
 .auth-split-right {
   background: #f7f7f7;
   border-radius: 0 32px 32px 0;
-  width: 420px;
+  /* match reduced width */
+  width: 378px;
   display: flex;
   align-items: center;
   justify-content: center;

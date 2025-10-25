@@ -100,8 +100,10 @@ function AppContent() {
       }}>
           <div className="promo-ticker" aria-live="polite">
             <div className="ticker-track">
-              <span style={{color:'#181818'}}>Plan your perfect Karnataka itinerary — smart routes, real travel times, beautiful trips.</span>
-              <span aria-hidden="true" style={{color:'#181818'}}>Plan your perfect Karnataka itinerary — smart routes, real travel times, beautiful trips.</span>
+              <span style={{color:'#181818', fontWeight:700}}>Elevate — GoK Seed Fund</span>
+              <span aria-hidden="true" style={{color:'#181818', marginLeft:12}}>Elevate — GoK Seed Fund</span>
+              <span style={{color:'#181818', marginLeft:20}}>Supporting startups to boost Karnataka's GI tourism and local livelihoods.</span>
+              <span aria-hidden="true" style={{color:'#181818', marginLeft:12}}>Supporting startups to boost Karnataka's GI tourism and local livelihoods.</span>
             </div>
           </div>
       </div>

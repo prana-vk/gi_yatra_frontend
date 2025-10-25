@@ -7,7 +7,7 @@ function TripMap({ trip, schedule, onClose }) {
   // Karnataka GI location images (using Unsplash with Karnataka landmarks)
   const backgroundImages = [
     'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=1600&q=80', // Mysore Palace
-    'https://images.unsplash.com/photo-1609920658906-8223bd289001?w=1600&q=80', // Hampi
+  'https://m.media-amazon.com/images/S/aplus-media-library-service-media/1e778006-6416-4825-bdd3-344c79a80dfd.__CR49,0,983,608_PT0_SX970_V1___.jpg', // Hampi (replaced)
     'https://images.unsplash.com/photo-1587474260584-136574528ed5?w=1600&q=80', // Bangalore
     'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?w=1600&q=80', // Temple
     'https://images.unsplash.com/photo-1548013146-72479768bada?w=1600&q=80', // GI site

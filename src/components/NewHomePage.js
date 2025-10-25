@@ -34,19 +34,19 @@ function NewHomePage({ onNavigate }) {
   const topFeatures = [
     {
       id: 1,
-      img: 'https://tse2.mm.bing.net/th/id/OIP.mrJ_PZA1-ttCGAD7GfZIFgHaFj?rs=1&pid=ImgDetMain&o=7&rm=3',
+      img: 'https://m.media-amazon.com/images/S/aplus-media-library-service-media/1e778006-6416-4825-bdd3-344c79a80dfd.__CR49,0,983,608_PT0_SX970_V1___.jpg',
       title: 'Navigate Karnataka\'s GI Landscape',
       subtitle: 'From Mysore Silk to Channapatna Toys - authentic regional products'
     },
     {
       id: 2,
-      img: 'https://tse2.mm.bing.net/th/id/OIP.mrJ_PZA1-ttCGAD7GfZIFgHaFj?rs=1&pid=ImgDetMain&o=7&rm=3',
+      img: 'https://m.media-amazon.com/images/S/aplus-media-library-service-media/1e778006-6416-4825-bdd3-344c79a80dfd.__CR49,0,983,608_PT0_SX970_V1___.jpg',
       title: 'Discover Geographical Indications',
       subtitle: 'Map and background about GIs'
     },
     {
       id: 3,
-      img: 'https://tse2.mm.bing.net/th/id/OIP.mrJ_PZA1-ttCGAD7GfZIFgHaFj?rs=1&pid=ImgDetMain&o=7&rm=3',
+      img: 'https://m.media-amazon.com/images/S/aplus-media-library-service-media/1e778006-6416-4825-bdd3-344c79a80dfd.__CR49,0,983,608_PT0_SX970_V1___.jpg',
       title: 'Explore Karnataka\'s Geographical Indications',
       subtitle: 'Discover authentic GI products and unique locations.'
     }
