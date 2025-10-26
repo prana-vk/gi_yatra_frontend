@@ -160,7 +160,7 @@ function NewHomePage({ onNavigate }) {
             <h2>Featured GI Products</h2>
           </div>
 
-          <div className="locations-carousel" style={{gridTemplateColumns: 'repeat(4, 1fr)'}}>
+          <div className="locations-carousel">
             {locations.slice(0, 4).map((location, index) => (
               <div 
                 key={location.id} 
