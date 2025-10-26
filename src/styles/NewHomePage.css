@@ -794,14 +794,25 @@
   .features-grid, .locations-carousel {
     grid-template-columns: 1fr;
   }
-  
   .steps-grid {
+    /* switch to grid layout on small screens so cards stack vertically */
+    display: grid;
     grid-template-columns: 1fr;
+    gap: 18px;
+    align-items: center;
+    justify-items: center;
   }
-  
+
+  .step-card {
+    min-width: auto;
+    max-width: 100%;
+    width: 100%;
+  }
+
   .step-connector {
-    transform: rotate(90deg);
-    margin: 20px 0;
+    transform: none;
+    margin: 0;
+    font-size: 2rem;
   }
   
   .stats-grid {
