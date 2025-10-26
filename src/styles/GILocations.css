@@ -173,10 +173,17 @@
 /* Locations Grid */
 .locations-grid {
   display: grid;
-  /* Force single-column layout so each location card appears on its own row */
-  grid-template-columns: 1fr;
-  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
   margin-bottom: 3rem;
+}
+
+/* Mobile: show cards one per row on small screens */
+@media (max-width: 900px) {
+  .locations-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
 }
 
 .location-card {
