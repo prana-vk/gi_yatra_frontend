@@ -3,7 +3,7 @@
    GI LOCATIONS STYLES
    =============================================== */
 
-/* Override: make primary content text black to remove brown accents */
+/* Use theme text color instead of forcing black. Removing !important keeps styling flexible */
 .gi-locations-list h1,
 .gi-locations-list h2,
 .gi-locations-list h3,
@@ -17,7 +17,7 @@
 .gi-locations-list .page-info,
 .gi-locations-list .controls,
 .gi-locations-list .results-info {
-  color: #000 !important;
+  color: #181818; /* use app theme text color */
 }
 
 /* Keep badges and buttons their own colors */
@@ -173,8 +173,9 @@
 /* Locations Grid */
 .locations-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 2rem;
+  /* Force single-column layout so each location card appears on its own row */
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
   margin-bottom: 3rem;
 }
 
