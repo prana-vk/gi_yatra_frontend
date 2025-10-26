@@ -398,6 +398,99 @@ body {
   font-size: 1rem;
 }
 
+/* ==========================
+   MOBILE NAV / RESPONSIVE
+   ========================== */
+
+.mobile-nav-toggle {
+  display: none; /* shown on small screens */
+  background: transparent;
+  border: none;
+  padding: 0.5rem;
+  margin-right: 0.25rem;
+  cursor: pointer;
+}
+
+.hamburger {
+  display: inline-block;
+  width: 22px;
+  height: 2px;
+  background: #111827;
+  position: relative;
+  transition: all 0.25s ease;
+}
+.hamburger::before,
+.hamburger::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 22px;
+  height: 2px;
+  background: #111827;
+  transition: all 0.25s ease;
+}
+.hamburger::before { top: -7px; }
+.hamburger::after { top: 7px; }
+.hamburger.open {
+  background: transparent;
+}
+.hamburger.open::before {
+  transform: rotate(45deg) translate(4px, 4px);
+}
+.hamburger.open::after {
+  transform: rotate(-45deg) translate(4px, -4px);
+}
+
+/* Hide desktop nav on small screens and show hamburger */
+@media (max-width: 900px) {
+  .mobile-nav-toggle { display: inline-flex; align-items: center; }
+  .header-content { padding: 0.5rem 1rem; }
+  .logo h1 { font-size: 1rem; }
+  .main-navigation { display: none; }
+  .main-navigation.open {
+    display: flex;
+    position: absolute;
+    top: 56px; /* below header */
+    left: 0;
+    right: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.98));
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0.75rem 1rem 1.5rem 1rem;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    z-index: 1200;
+  }
+  .main-navigation.open .nav-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.9rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.35rem;
+    background: transparent;
+    color: #0f172a;
+    font-size: 1rem;
+  }
+  .main-navigation.open .nav-item.cta {
+    background: #181818;
+    color: #fff;
+  }
+  .main-navigation.open .nav-item:last-child { margin-bottom: 0; }
+
+  /* Make touch targets larger across app */
+  .nav-item, .btn, .tab-btn { padding: 0.9rem 1rem; font-size: 1.02rem; }
+  .app-main { padding-top: 64px; }
+}
+
+/* Extra small screens tweaks */
+@media (max-width: 480px) {
+  .header-content { padding: 0.4rem 0.75rem; }
+  .logo h1 { font-size: 0.95rem; }
+  .main-content { padding: 0 0.5rem; }
+  .app-footer .footer-content { padding: 2rem 1rem 1rem; }
+}
+
+
 .footer-section p {
   color: #94a3b8;
   line-height: 1.6;

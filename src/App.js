@@ -17,6 +17,7 @@ function AppContent() {
   const { user, isAuthenticated, logout } = useAuth();
   const [activeSection, setActiveSection] = useState('home');
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navigationItems = [
     { key: 'home', label: 'Home', component: HomePage },
@@ -49,7 +50,17 @@ function AppContent() {
             <h1>GI Yatra</h1>
 
           </div>
-          <nav className="main-navigation">
+          {/* Mobile hamburger toggle (visible on small screens) */}
+          <button
+            className="mobile-nav-toggle"
+            onClick={() => setMobileMenuOpen(prev => !prev)}
+            aria-expanded={mobileMenuOpen}
+            aria-label={mobileMenuOpen ? 'Close navigation' : 'Open navigation'}
+          >
+            <span className={`hamburger ${mobileMenuOpen ? 'open' : ''}`} />
+          </button>
+
+          <nav className={`main-navigation ${mobileMenuOpen ? 'open' : ''}`}>
             {navigationItems.filter(item => item.key !== 'login').map(item => (
               <button
                 key={item.key}
