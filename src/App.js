@@ -50,22 +50,12 @@ function AppContent() {
             <h1>GI Yatra</h1>
 
           </div>
-          {/* Mobile hamburger toggle (visible on small screens) */}
-          <button
-            className="mobile-nav-toggle"
-            onClick={() => setMobileMenuOpen(prev => !prev)}
-            aria-expanded={mobileMenuOpen}
-            aria-label={mobileMenuOpen ? 'Close navigation' : 'Open navigation'}
-          >
-            <span className={`hamburger ${mobileMenuOpen ? 'open' : ''}`} />
-          </button>
-
           <nav className={`main-navigation ${mobileMenuOpen ? 'open' : ''}`}>
             {navigationItems.filter(item => item.key !== 'login').map(item => (
               <button
                 key={item.key}
                 className={`nav-item ${item.key === 'locations' ? 'cta' : ''} ${activeSection === item.key ? 'active' : ''}`}
-                onClick={() => setActiveSection(item.key)}
+                onClick={() => { setActiveSection(item.key); if (mobileMenuOpen) setMobileMenuOpen(false); }}
               >
                 <span className="nav-label">{item.label}</span>
               </button>
@@ -77,12 +67,22 @@ function AppContent() {
                   <span className="nav-label">{user?.username}</span>
                 </div>
                 {/* Render logout as a regular nav item so it stays inline with other buttons */}
-                <button onClick={handleLogout} className="nav-item" style={{ background: 'transparent', color: '#181818' }}>
+                <button onClick={() => { handleLogout(); if (mobileMenuOpen) setMobileMenuOpen(false); }} className="nav-item" style={{ background: 'transparent', color: '#181818' }}>
                   <span className="nav-label">Logout</span>
                 </button>
               </>
             )}
           </nav>
+
+          {/* Mobile hamburger toggle (visible on small screens) - placed after nav so it appears on the right */}
+          <button
+            className="mobile-nav-toggle"
+            onClick={() => setMobileMenuOpen(prev => !prev)}
+            aria-expanded={mobileMenuOpen}
+            aria-label={mobileMenuOpen ? 'Close navigation' : 'Open navigation'}
+          >
+            <span className={`hamburger ${mobileMenuOpen ? 'open' : ''}`} />
+          </button>
         </div>
       </header>
 

@@ -776,3 +776,12 @@
     align-self: flex-start;
   }
 }
+
+/* Ensure single-column stacking on most mobile/tablet widths */
+@media (max-width: 900px) {
+  .locations-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+  .location-card { margin: 0; border-radius: 12px; }
+}
