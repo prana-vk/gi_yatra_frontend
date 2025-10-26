@@ -13,6 +13,7 @@ import {
 import { generateSmartSchedule, calculateTripStats } from '../services/smartScheduleGenerator';
 import { formatDuration, formatDistance } from '../services/googleMapsService';
 import TripMap from './TripMap';
+import MapPicker from './MapPicker';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -39,11 +40,17 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
   const [createdTrip, setCreatedTrip] = useState(null);
   const [tripProgress, setTripProgress] = useState({ visited: 0, total: 0, percentage: 0 });
   const [showMap, setShowMap] = useState(false);
+  const [mapPickerOpen, setMapPickerOpen] = useState(false);
   const [modal, setModal] = useState({ open: false, title: '', content: null, actions: [] });
   const scheduleRef = useRef(null);
 
   const openModal = (title, content, actions = []) => setModal({ open: true, title, content, actions });
   const closeModal = () => setModal(m => ({ ...m, open: false }));
+
+  const handlePickOnMap = () => setMapPickerOpen(true);
+  const handleMapPick = ({ latitude, longitude, name }) => {
+    setTripData(td => ({ ...td, start_location_latitude: String(latitude), start_location_longitude: String(longitude), start_location_name: name }));
+  };
 
   const loadTripData = useCallback(async () => {
     try {
@@ -344,57 +351,99 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
   };
 
   const handleDownloadPdf = async () => {
-    if (!scheduleRef.current) {
+    const targetNode = scheduleRef.current;
+
+    if (!targetNode) {
       openModal('Cannot generate PDF', (<div>Schedule not available for export.</div>));
       return;
     }
 
     try {
-      // Render schedule DOM to canvas
-      const canvas = await html2canvas(scheduleRef.current, { scale: 2, useCORS: true });
+      // Clone the schedule node and sanitize interactive elements (remove buttons / controls)
+      const cloneWrapper = document.createElement('div');
+      cloneWrapper.style.position = 'absolute';
+      cloneWrapper.style.left = '-9999px';
+      cloneWrapper.style.top = '0';
+      // Ensure similar width to original so layout matches
+      cloneWrapper.style.width = `${targetNode.offsetWidth}px`;
+      const clone = targetNode.cloneNode(true);
 
-      // Draw watermark onto a new canvas so it appears on the PDF
-      const wc = document.createElement('canvas');
-      wc.width = canvas.width;
-      wc.height = canvas.height;
-      const ctx = wc.getContext('2d');
-      ctx.drawImage(canvas, 0, 0);
+      // Remove all button elements and any elements with role=button
+      clone.querySelectorAll('button, [role="button"]').forEach(el => el.remove());
+      // Remove success/feasibility banners and UI-only metric chips from export
+      clone.querySelectorAll('.success-banner, .itinerary-metrics, .metric-chip').forEach(el => el.remove());
+      // Also remove any nodes that contain the old feasibility text to be safe
+      Array.from(clone.querySelectorAll('*')).forEach(node => {
+        try {
+          const txt = (node.textContent || '').trim();
+          if (!txt) return;
+          const lower = txt.toLowerCase();
+          if (lower.includes('all locations scheduled successfully') || lower.includes('partial schedule') || lower.includes('covered:')) {
+            node.remove();
+          }
+        } catch (e) { /* ignore */ }
+      });
+      // Remove elements that look like controls by class name patterns
+      Array.from(clone.querySelectorAll('[class]')).forEach(el => {
+        const cls = el.className || '';
+        if (/btn|button|open-map-btn|selection-btn|mark-visited-btn|unmark-visited-btn|remove-btn|start-trip-btn|finish-btn|generate-btn|next-btn|back-btn|cancel-btn|export/i.test(cls)) {
+          el.remove();
+        }
+      });
 
-      // Watermark styling - single centered, rotated watermark
-      ctx.globalAlpha = 0.12;
-      ctx.fillStyle = '#000';
-      const watermarkText = 'GI YATRA';
-      // choose a font size relative to canvas
-      const fontSize = Math.floor(Math.min(wc.width, wc.height) / 6);
-      ctx.font = `${fontSize}px sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.save();
-      // center and rotate slightly for diagonal look
-      ctx.translate(wc.width / 2, wc.height / 2);
-      ctx.rotate(-0.35); // ~ -20 degrees
-      ctx.fillText(watermarkText, 0, 0);
-      ctx.restore();
+      cloneWrapper.appendChild(clone);
+      document.body.appendChild(cloneWrapper);
 
-      const imgData = wc.toDataURL('image/png');
+      // Render cleaned clone to canvas
+      const canvas = await html2canvas(clone, { scale: 2, useCORS: true });
 
-      // Create PDF and add the image
-      const pdf = new jsPDF({ unit: 'px', format: 'a4' });
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
+  // Draw watermark onto a new canvas so it appears on the PDF
+  const wc = document.createElement('canvas');
+  wc.width = canvas.width;
+  wc.height = canvas.height;
+  const ctx = wc.getContext('2d');
+  ctx.drawImage(canvas, 0, 0);
 
-      // scale the image to fit A4, maintaining aspect
-      const img = new Image();
-      img.src = imgData;
-      await new Promise((res) => (img.onload = res));
-      const ratio = Math.min(pdfWidth / img.width, pdfHeight / img.height);
-      const imgW = img.width * ratio;
-      const imgH = img.height * ratio;
-      const marginX = (pdfWidth - imgW) / 2;
-      const marginY = 20;
+  // Watermark styling - single centered, rotated watermark
+  ctx.globalAlpha = 0.12;
+  ctx.fillStyle = '#000';
+  const watermarkText = 'GI YATRA';
+  // choose a font size relative to canvas
+  const fontSize = Math.floor(Math.min(wc.width, wc.height) / 6);
+  ctx.font = `${fontSize}px sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.save();
+  // center and rotate slightly for diagonal look
+  ctx.translate(wc.width / 2, wc.height / 2);
+  ctx.rotate(-0.35); // ~ -20 degrees
+  ctx.fillText(watermarkText, 0, 0);
+  ctx.restore();
+
+  const imgData = wc.toDataURL('image/png');
+
+  // Create PDF and add the image
+  const pdf = new jsPDF({ unit: 'px', format: 'a4' });
+  const pdfWidth = pdf.internal.pageSize.getWidth();
+  const pdfHeight = pdf.internal.pageSize.getHeight();
+
+  // scale the image to fit A4, maintaining aspect
+  const img = new Image();
+  img.src = imgData;
+  await new Promise((res) => (img.onload = res));
+  const ratio = Math.min(pdfWidth / img.width, pdfHeight / img.height);
+  const imgW = img.width * ratio;
+  const imgH = img.height * ratio;
+  const marginX = (pdfWidth - imgW) / 2;
+  const marginY = 20;
 
       pdf.addImage(imgData, 'PNG', marginX, marginY, imgW, imgH);
-      pdf.save(`${tripData.title || 'itinerary'}-${tripData.start_date || ''}.pdf`);
+      pdf.save(`${(tripData.title || 'itinerary').replace(/[^a-z0-9\-\_ ]/gi, '')}-${tripData.start_date || ''}.pdf`);
+
+      // Cleanup cloned DOM
+      if (cloneWrapper && cloneWrapper.parentNode) {
+        document.body.removeChild(cloneWrapper);
+      }
     } catch (err) {
       console.error('Error generating PDF:', err);
       openModal('PDF Error', (<div>Could not generate PDF. Please try again.</div>));
@@ -594,18 +643,18 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                       type="button"
                       onClick={handleUseMyLocation}
                       disabled={locating}
-                      style={{
-                        padding: '1rem 1.5rem',
-                        background: '#10b981',
-                        color: '#fff',
-                        borderRadius: 12,
-                        border: 'none',
-                        fontWeight: 700,
-                        cursor: locating ? 'not-allowed' : 'pointer',
-                        whiteSpace: 'nowrap'
-                      }}
+                      className="location-btn"
+                      style={{ borderRadius: 12 }}
                     >
                       {locating ? 'Getting...' : 'Use My Location'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handlePickOnMap}
+                      className="location-btn"
+                      style={{ borderRadius: 12, marginLeft: 8, background: '#4b5563' }}
+                    >
+                      Pick on Map
                     </button>
                   </div>
                   <p style={{ margin: '8px 0 0', fontSize: '0.85rem', color: '#6b7280' }}>
@@ -885,6 +934,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
               </div>
             </div>
           )}
+          <MapPicker open={mapPickerOpen} onClose={() => setMapPickerOpen(false)} onPick={handleMapPick} initialPosition={{ lat: parseFloat(tripData.start_location_latitude || 12.9716), lon: parseFloat(tripData.start_location_longitude || 77.5946) }} />
 
           {/* Step 3: Review */}
           {currentStep === 3 && (
@@ -994,28 +1044,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                   🗓️ Your Smart Itinerary
                 </h2>
                 
-                {/* Feasibility Alert */}
-                {schedule.summary && (
-                  <div style={{
-                    padding: '1rem',
-                    background: schedule.summary.isFeasible ? '#d1fae5' : '#fee2e2',
-                    borderRadius: 12,
-                    marginBottom: '1rem',
-                    border: `2px solid ${schedule.summary.isFeasible ? '#10b981' : '#ef4444'}`
-                  }}>
-                    <div style={{ fontWeight: 700, marginBottom: 4, color: schedule.summary.isFeasible ? '#065f46' : '#991b1b' }}>
-                      {schedule.summary.isFeasible ? 'All locations scheduled successfully!' : 'Partial Schedule - Not all locations could fit'}
-                    </div>
-                    <div style={{ fontSize: '0.9rem', color: schedule.summary.isFeasible ? '#047857' : '#dc2626' }}>
-                      Covered: {schedule.summary.coveredLocations} / {schedule.summary.totalLocations} locations
-                      {!schedule.summary.isFeasible && schedule.summary.uncoveredLocations.length > 0 && (
-                        <div style={{ marginTop: 4 }}>
-                          Not scheduled: {schedule.summary.uncoveredLocations.join(', ')}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
+                {/* Feasibility alert removed per design: no prominent green/red banner shown */}
 
                 {/* Trip Statistics */}
                 {(() => {
@@ -1087,6 +1116,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                     <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: '#1f2937' }}>
                       Day {day.day_number} - {day.date}
                     </h3>
+                    {/* per-day export removed - use Download PDF which now sanitizes output */}
                     {day.summary && (
                       <div style={{ fontSize: '0.85rem', color: '#6b7280', fontWeight: 600 }}>
                         {day.summary.locationsVisited} locations • {formatDuration(day.summary.totalTime)}

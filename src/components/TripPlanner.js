@@ -12,6 +12,7 @@ import {
   generateLocalSchedule
 } from '../services/localTripStorage';
 import TripMap from './TripMap';
+import MapPicker from './MapPicker';
 import '../styles/TripPlannerRedesign.css';
 
 
@@ -27,7 +28,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
     preferred_end_time: '18:00'
   });
   const [availableLocations, setAvailableLocations] = useState([]);
-  const [locationsError, setLocationsError] = useState("");
+  const [locationsError, setLocationsError] = useState(""); 
   const [districts, setDistricts] = useState([]);
   const [selectedLocations, setSelectedLocations] = useState([]);
   const [selectedDistrict, setSelectedDistrict] = useState('');
@@ -38,6 +39,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
   const [createdTrip, setCreatedTrip] = useState(null);
   const [tripProgress, setTripProgress] = useState({ visited: 0, total: 0, percentage: 0 });
   const [showMap, setShowMap] = useState(false);
+  const [mapPickerOpen, setMapPickerOpen] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: '', type: '' });
   const [loadingMessage, setLoadingMessage] = useState('Processing your trip...');
 
@@ -346,6 +348,16 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
     );
   };
 
+  const handleMapPick = ({ latitude, longitude, name }) => {
+    setTripData(prev => ({
+      ...prev,
+      start_location_latitude: String(latitude),
+      start_location_longitude: String(longitude),
+      start_location_name: name
+    }));
+    setMapPickerOpen(false);
+  };
+
   // transformScheduleData removed — previously unused helper
 
   const formatDate = (dateString) => {
@@ -458,7 +470,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
       {/* Step 1: Trip Details */}
       {currentStep === 1 && (
         <div className="trip-step step-1">
-          <div className="step-header-with-image">
+      <div className="step-header-with-image">
             <div className="step-image-container">
               <SafeImage 
                 src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80"
@@ -534,6 +546,9 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                       ) : ''}
                     </span>
                     {locating ? 'Detecting…' : 'Use My Location'}
+                  </button>
+                  <button type="button" onClick={() => setMapPickerOpen(true)} className="location-btn" style={{ marginLeft: 8 }}>
+                    Pick on Map
                   </button>
                 </div>
                 <small className="form-help">Where will you start your journey?</small>
@@ -1025,10 +1040,98 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
               />
               <div className="step-overlay"></div>
             </div>
-            <h2>Your Perfect Karnataka Journey</h2>
+            <h2>Your Itinerary</h2>
             <p>Your optimized day-by-day itinerary is ready!</p>
           </div>
           
+          {/* Metric chips */}
+          <div className="itinerary-metrics">
+            <div className="metric-chip">
+              <div className="metric-value">{selectedLocations.length}</div>
+              <div className="metric-label">Locations</div>
+            </div>
+            <div className="metric-chip">
+              <div className="metric-value">{(function(){
+                // compute total travel km
+                let km = 0;
+                if (schedule && schedule.days) {
+                  schedule.days.forEach(d => {
+                    if (Array.isArray(d.items)) {
+                      d.items.forEach(i => {
+                        if (i.item_type === 'travel' && i.distance) {
+                          const n = parseFloat(String(i.distance).replace(/[^0-9.]/g, '')) || 0;
+                          km += n;
+                        }
+                      })
+                    }
+                  })
+                }
+                return km.toFixed(2);
+              })()} km</div>
+              <div className="metric-label">Total Travel</div>
+            </div>
+            <div className="metric-chip">
+              <div className="metric-value">{(function(){
+                let mins = 0;
+                if (schedule && schedule.days) {
+                  schedule.days.forEach(d => {
+                    if (Array.isArray(d.items)) {
+                      d.items.forEach(i => {
+                        if (i.item_type === 'travel' && i.duration) {
+                          const n = parseFloat(String(i.duration).replace(/[^0-9.]/g, '')) || 0;
+                          mins += n;
+                        }
+                      })
+                    }
+                  })
+                }
+                const h = Math.floor(mins/60); const m = Math.round(mins%60);
+                return (h>0? (h+'h '):'') + (m>0? (m+'m'):'0m');
+              })()}</div>
+              <div className="metric-label">Driving Time</div>
+            </div>
+            <div className="metric-chip">
+              <div className="metric-value">{(function(){
+                // visit time estimated from item.location.typical_visit_duration
+                let mins = 0;
+                if (schedule && schedule.days) {
+                  schedule.days.forEach(d => {
+                    if (Array.isArray(d.items)) {
+                      d.items.forEach(i => {
+                        if (i.item_type === 'location' && i.location && i.location.typical_visit_duration) {
+                          mins += Number(i.location.typical_visit_duration) || 0;
+                        }
+                      })
+                    }
+                  })
+                }
+                const h = Math.floor(mins/60); const m = Math.round(mins%60);
+                return (h>0? (h+'h '):'') + (m>0? (m+'m'):'0m');
+              })()}</div>
+              <div className="metric-label">Visit Time</div>
+            </div>
+            <div className="metric-chip">
+              <div className="metric-value">{(function(){
+                // total time = driving + visit
+                let drive = 0; let visit = 0;
+                if (schedule && schedule.days) {
+                  schedule.days.forEach(d => {
+                    if (Array.isArray(d.items)) {
+                      d.items.forEach(i => {
+                        if (i.item_type === 'travel' && i.duration) drive += parseFloat(String(i.duration).replace(/[^0-9.]/g, ''))||0;
+                        if (i.item_type === 'location' && i.location && i.location.typical_visit_duration) visit += Number(i.location.typical_visit_duration) || 0;
+                      })
+                    }
+                  })
+                }
+                const mins = Math.round(drive + visit);
+                const h = Math.floor(mins/60); const m = Math.round(mins%60);
+                return (h>0? (h+'h '):'') + (m>0? (m+'m'):'0m');
+              })()}</div>
+              <div className="metric-label">Total Time</div>
+            </div>
+          </div>
+
           {/* Progress Bar */}
           {tripProgress.total > 0 && (
             <div className="trip-progress-card">
@@ -1251,6 +1354,14 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
           trip={createdTrip} 
           schedule={schedule} 
           onClose={() => setShowMap(false)} 
+        />
+      )}
+      {mapPickerOpen && (
+        <MapPicker
+          open={mapPickerOpen}
+          onClose={() => setMapPickerOpen(false)}
+          onPick={handleMapPick}
+          initialPosition={{ lat: parseFloat(tripData.start_location_latitude || 12.9716), lon: parseFloat(tripData.start_location_longitude || 77.5946) }}
         />
       )}
     </div>

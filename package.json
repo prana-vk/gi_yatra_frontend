@@ -27,6 +27,9 @@
     "web-vitals": "^2.1.4",
     "jspdf": "^2.5.1",
     "html2canvas": "^1.4.1"
+    ,
+    "leaflet": "^1.9.4",
+    "react-leaflet": "^4.2.1"
   },
   
   "scripts": {
