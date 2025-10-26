@@ -29,6 +29,30 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 32px;
 }
+
+/* Mobile: stack top feature cards and feature cards one-per-row */
+@media (max-width: 900px) {
+  .top-features-inner {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding: 0 12px;
+  }
+  .top-feature-card {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .tf-image { height: 180px; }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding: 0 12px;
+  }
+  .feature-card {
+    padding: 20px;
+    border-radius: 12px;
+  }
+}
 .top-feature-card {
   display: flex;
   flex-direction: column;
