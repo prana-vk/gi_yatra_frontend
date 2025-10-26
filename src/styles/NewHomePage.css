@@ -813,6 +813,18 @@
     transform: none;
     margin: 0;
     font-size: 2rem;
+    /* hide desktop arrow glyph and show a downward arrow via pseudo element for better control */
+    color: transparent; /* hide the original arrow character in DOM */
+    position: relative;
+  }
+
+  .step-connector::after {
+    content: '↓';
+    color: #cbd5e0;
+    position: relative;
+    display: inline-block;
+    font-size: 2rem;
+    line-height: 1;
   }
   
   .stats-grid {
