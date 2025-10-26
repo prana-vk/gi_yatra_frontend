@@ -47,6 +47,8 @@ export const saveLocalTrip = (tripData) => {
     const newTrip = {
       ...tripData,
       id: counter,
+      // maintain a legacy count field for UI compatibility
+      selected_locations_count: (tripData.selectedLocations && tripData.selectedLocations.length) || tripData.selected_locations_count || 0,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
@@ -77,6 +79,8 @@ export const updateLocalTrip = (tripId, updatedData) => {
     trips[index] = {
       ...trips[index],
       ...updatedData,
+      // keep legacy count in sync
+      selected_locations_count: (updatedData.selectedLocations && updatedData.selectedLocations.length) || updatedData.selected_locations_count || trips[index].selected_locations_count || 0,
       updated_at: new Date().toISOString()
     };
     

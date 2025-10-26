@@ -67,7 +67,8 @@ export const generateSmartSchedule = async (trip) => {
       }
     };
     
-    let currentDate = new Date();
+  // Use provided trip.start_date if available, otherwise default to today
+  let currentDate = trip.start_date ? new Date(trip.start_date) : new Date();
     let locationIndex = 0;
     let totalTravelTime = 0;
     let totalVisitTime = 0;

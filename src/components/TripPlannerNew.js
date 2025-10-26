@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Modal from './Modal';
 import {
   getAllGILocations,
@@ -13,6 +13,8 @@ import {
 import { generateSmartSchedule, calculateTripStats } from '../services/smartScheduleGenerator';
 import { formatDuration, formatDistance } from '../services/googleMapsService';
 import TripMap from './TripMap';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
   const [currentStep, setCurrentStep] = useState(1);
@@ -38,6 +40,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
   const [tripProgress, setTripProgress] = useState({ visited: 0, total: 0, percentage: 0 });
   const [showMap, setShowMap] = useState(false);
   const [modal, setModal] = useState({ open: false, title: '', content: null, actions: [] });
+  const scheduleRef = useRef(null);
 
   const openModal = (title, content, actions = []) => setModal({ open: true, title, content, actions });
   const closeModal = () => setModal(m => ({ ...m, open: false }));
@@ -112,10 +115,32 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
 
   const handleTripDataChange = (e) => {
     const { name, value } = e.target;
-    setTripData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setTripData(prev => {
+      const updated = { ...prev, [name]: value };
+
+      // If start_date or num_days changed, compute till_date for UI preview.
+      if (name === 'start_date' || name === 'num_days') {
+        try {
+          const numDays = Number(name === 'num_days' ? value : (prev.num_days || 1)) || 1;
+          // Determine base start date: prefer explicit start_date if provided, else use tomorrow (local) for preview
+          let startDateStr = name === 'start_date' ? value : (prev.start_date || '');
+          let startDateObj;
+          if (startDateStr) {
+            startDateObj = new Date(startDateStr);
+          } else {
+            startDateObj = new Date();
+            startDateObj.setDate(startDateObj.getDate() + 1);
+          }
+          const tillDateObj = new Date(startDateObj);
+          tillDateObj.setDate(tillDateObj.getDate() + (numDays - 1));
+          updated.till_date = tillDateObj.toISOString().split('T')[0];
+        } catch (err) {
+          // ignore and don't set till_date
+        }
+      }
+
+      return updated;
+    });
   };
 
   const handleLocationToggle = (location) => {
@@ -153,9 +178,51 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
 
     setLoading(true);
     try {
+      // Ensure trip has a start_date and till_date. If not provided, fetch today's date from the internet
+      // and compute till_date = start_date + (num_days - 1). Falls back to local date on failure.
+      const numDays = Number(tripData.num_days) || 1;
+
+      const computeStartAndTill = async () => {
+        let startDateObj;
+        if (tripData.start_date) {
+          startDateObj = new Date(tripData.start_date);
+        } else {
+          // Try to get current date from worldtimeapi (uses client IP timezone)
+          try {
+            const resp = await fetch('https://worldtimeapi.org/api/ip');
+            if (resp && resp.ok) {
+              const data = await resp.json();
+              // data.datetime is like '2025-10-26T14:23:12.345678+05:30'
+              const dt = data.datetime || data.utc_datetime;
+              if (dt) {
+                startDateObj = new Date(dt);
+              }
+            }
+          } catch (err) {
+            // network or parsing error – we'll fallback to local date
+            console.warn('Could not fetch network date, falling back to local date:', err);
+          }
+
+          if (!startDateObj) {
+            startDateObj = new Date();
+          }
+        }
+
+        const tillDateObj = new Date(startDateObj);
+        tillDateObj.setDate(tillDateObj.getDate() + (numDays - 1));
+        const toISODate = (d) => d.toISOString().split('T')[0];
+        return { start_date: toISODate(startDateObj), till_date: toISODate(tillDateObj) };
+      };
+
+      const { start_date, till_date } = await computeStartAndTill();
+
       const tripWithLocations = {
         ...tripData,
         selectedLocations,
+        start_date,
+        till_date,
+        // Trip list expects `end_date` key; map till_date to end_date for compatibility
+        end_date: till_date,
         id: editingTrip?.id || `trip-${Date.now()}`
       };
 
@@ -237,19 +304,120 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
   };
 
   const handleMarkVisited = (dayIndex, visitIndex) => {
-    if (createdTrip) {
-      markLocationAsVisited(createdTrip.id, dayIndex, visitIndex);
-      const progress = getTripProgress(createdTrip.id);
-      setTripProgress(progress);
-      // Update local state
-      const updatedSchedule = { ...schedule };
-      updatedSchedule.days[dayIndex].visits[visitIndex].visited = true;
-      setSchedule(updatedSchedule);
+    if (!createdTrip || !schedule || !schedule.days) return;
+
+    // Find the item for the given day and index
+    const day = schedule.days[dayIndex];
+    if (!day || !day.items || !day.items[visitIndex]) return;
+
+    const item = day.items[visitIndex];
+    // Only mark location items as visited
+    if (item.item_type !== 'location') return;
+
+    // Call storage helper with the location id
+    try {
+      const locationId = item.location?.id;
+      if (locationId != null) {
+        markLocationAsVisited(createdTrip.id, locationId, true);
+      }
+    } catch (err) {
+      console.warn('Could not mark visited in storage', err);
     }
+
+    // Update local state immutably for React
+    const updatedSchedule = { ...schedule };
+    updatedSchedule.days = schedule.days.map((d, idx) => {
+      if (idx !== dayIndex) return d;
+      return {
+        ...d,
+        items: d.items.map((it, j) => (j === visitIndex ? { ...it, visited: true } : it))
+      };
+    });
+
+    const progress = getTripProgress(createdTrip.id);
+    setTripProgress(progress);
+    setSchedule(updatedSchedule);
   };
 
   const handleSaveAndExit = () => {
     onTripSaved && onTripSaved();
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!scheduleRef.current) {
+      openModal('Cannot generate PDF', (<div>Schedule not available for export.</div>));
+      return;
+    }
+
+    try {
+      // Render schedule DOM to canvas
+      const canvas = await html2canvas(scheduleRef.current, { scale: 2, useCORS: true });
+
+      // Draw watermark onto a new canvas so it appears on the PDF
+      const wc = document.createElement('canvas');
+      wc.width = canvas.width;
+      wc.height = canvas.height;
+      const ctx = wc.getContext('2d');
+      ctx.drawImage(canvas, 0, 0);
+
+      // Watermark styling - single centered, rotated watermark
+      ctx.globalAlpha = 0.12;
+      ctx.fillStyle = '#000';
+      const watermarkText = 'GI YATRA';
+      // choose a font size relative to canvas
+      const fontSize = Math.floor(Math.min(wc.width, wc.height) / 6);
+      ctx.font = `${fontSize}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.save();
+      // center and rotate slightly for diagonal look
+      ctx.translate(wc.width / 2, wc.height / 2);
+      ctx.rotate(-0.35); // ~ -20 degrees
+      ctx.fillText(watermarkText, 0, 0);
+      ctx.restore();
+
+      const imgData = wc.toDataURL('image/png');
+
+      // Create PDF and add the image
+      const pdf = new jsPDF({ unit: 'px', format: 'a4' });
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      // scale the image to fit A4, maintaining aspect
+      const img = new Image();
+      img.src = imgData;
+      await new Promise((res) => (img.onload = res));
+      const ratio = Math.min(pdfWidth / img.width, pdfHeight / img.height);
+      const imgW = img.width * ratio;
+      const imgH = img.height * ratio;
+      const marginX = (pdfWidth - imgW) / 2;
+      const marginY = 20;
+
+      pdf.addImage(imgData, 'PNG', marginX, marginY, imgW, imgH);
+      pdf.save(`${tripData.title || 'itinerary'}-${tripData.start_date || ''}.pdf`);
+    } catch (err) {
+      console.error('Error generating PDF:', err);
+      openModal('PDF Error', (<div>Could not generate PDF. Please try again.</div>));
+    }
+  };
+
+  // Helper to compute a preview till_date when not present in tripData
+  const computePreviewTillDate = () => {
+    try {
+      const numDays = Number(tripData.num_days) || 1;
+      let startDateObj;
+      if (tripData.start_date) {
+        startDateObj = new Date(tripData.start_date);
+      } else {
+        startDateObj = new Date();
+        startDateObj.setDate(startDateObj.getDate() + 1);
+      }
+      const tillDateObj = new Date(startDateObj);
+      tillDateObj.setDate(tillDateObj.getDate() + (numDays - 1));
+      return tillDateObj.toISOString().split('T')[0];
+    } catch (err) {
+      return '';
+    }
   };
 
   return (
@@ -396,6 +564,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                   <p style={{ margin: '8px 0 0', fontSize: '0.85rem', color: '#6b7280' }}>
                     How many days will your trip last?
                   </p>
+                  
                 </div>
 
                 <div>
@@ -490,6 +659,35 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                   />
                 </div>
               </div>
+
+              {/* Start Date (optional) */}
+              <div style={{ marginBottom: '2rem' }}>
+                <label style={{ display: 'block', marginBottom: 8, fontWeight: 700, fontSize: '0.95rem', color: '#374151' }}>
+                  Start Date (optional)
+                </label>
+                <input
+                  name="start_date"
+                  type="date"
+                  value={tripData.start_date || ''}
+                  onChange={handleTripDataChange}
+                  style={{
+                    width: '100%',
+                    padding: '0.9rem',
+                    borderRadius: 12,
+                    border: '2px solid #e5e7eb',
+                    fontSize: '1rem',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = '#8b5e34'}
+                  onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                />
+                <p style={{ margin: '8px 0 0', fontSize: '0.85rem', color: '#6b7280' }}>
+                  Leave empty to use today's date from the internet (default: tomorrow when generating a trip).
+                </p>
+              </div>
+
+              
 
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16 }}>
                 <button
@@ -616,34 +814,34 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                         e.currentTarget.style.boxShadow = 'none';
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'start', gap: 12 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        {/* selection dot */}
                         <div style={{
-                          width: 24,
-                          height: 24,
+                          width: 20,
+                          height: 20,
                           borderRadius: '50%',
-                          border: '2px solid #8b5e34',
+                          border: `2px solid ${isSelected ? '#8b5e34' : '#d1d5db'}`,
                           background: isSelected ? '#8b5e34' : '#fff',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          flexShrink: 0,
-                          marginTop: 4
-                        }}>
-                          {isSelected && <span style={{ color: '#fff', fontWeight: 700 }}></span>}
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <h3 style={{ margin: '0 0 4px', fontSize: '1.1rem', fontWeight: 700, color: '#1f2937' }}>
-                            {location.name}
-                          </h3>
-                          <p style={{ margin: '0 0 8px', fontSize: '0.85rem', color: '#8b5e34', fontWeight: 600 }}>
-                            {location.district}
-                          </p>
-                          <p style={{ margin: 0, fontSize: '0.85rem', color: '#6b7280', lineHeight: 1.5 }}>
-                            {location.description}
-                          </p>
-                          <p style={{ margin: '8px 0 0', fontSize: '0.8rem', color: '#9ca3af' }}>
-                            Duration: {location.typical_visit_duration} mins
-                          </p>
+                          flexShrink: 0
+                        }} />
+
+                        {/* image + name only as requested */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
+                          {location.image ? (
+                            <img
+                              src={location.image}
+                              alt={location.name}
+                              style={{ width: 96, height: 72, objectFit: 'cover', borderRadius: 8, flexShrink: 0 }}
+                            />
+                          ) : (
+                            <div style={{ width: 96, height: 72, borderRadius: 8, background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6b7280', fontWeight: 700 }}>
+                              {location.name ? location.name.charAt(0).toUpperCase() : '?'}
+                            </div>
+                          )}
+
+                          <div style={{ flex: 1 }}>
+                            <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#1f2937' }}>{location.name}</h3>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -789,7 +987,7 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
 
           {/* Step 4: Schedule */}
           {currentStep === 4 && schedule && (
-            <div>
+            <div ref={scheduleRef}>
               {/* Schedule Header with Stats */}
               <div style={{ marginBottom: '2rem' }}>
                 <h2 style={{ margin: '0 0 0.5rem', fontSize: '1.75rem', fontWeight: 700, color: '#1f2937' }}>
@@ -1032,22 +1230,39 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
                 >
                   Back
                 </button>
-                <button
-                  onClick={handleSaveAndExit}
-                  style={{
-                    padding: '1rem 2rem',
-                    background: 'linear-gradient(90deg, #10b981, #059669)',
-                    color: '#fff',
-                    borderRadius: 50,
-                    border: 'none',
-                    fontWeight: 700,
-                    fontSize: '1rem',
-                    cursor: 'pointer',
-                    boxShadow: '0 8px 20px rgba(16,185,129,0.3)'
-                  }}
-                >
-                  Save & Exit
-                </button>
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <button
+                    onClick={handleDownloadPdf}
+                    style={{
+                      padding: '1rem 1.5rem',
+                      background: '#1f2937',
+                      color: '#fff',
+                      borderRadius: 50,
+                      border: 'none',
+                      fontWeight: 700,
+                      fontSize: '0.95rem',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Download PDF
+                  </button>
+                  <button
+                    onClick={handleSaveAndExit}
+                    style={{
+                      padding: '1rem 2rem',
+                      background: 'linear-gradient(90deg, #10b981, #059669)',
+                      color: '#fff',
+                      borderRadius: 50,
+                      border: 'none',
+                      fontWeight: 700,
+                      fontSize: '1rem',
+                      cursor: 'pointer',
+                      boxShadow: '0 8px 20px rgba(16,185,129,0.3)'
+                    }}
+                  >
+                    Save & Exit
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -1055,6 +1270,8 @@ function TripPlanner({ editingTrip, onTripSaved, onCancel }) {
       </div>
     </div>
   );
+
+
 }
 
 export default TripPlanner;

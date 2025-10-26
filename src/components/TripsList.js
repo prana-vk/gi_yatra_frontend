@@ -292,9 +292,9 @@ function TripsList({ onEditTrip, onCreateNew }) {
                   </div>
                 </div>
                 
-                <div className="trip-stats">
+                  <div className="trip-stats">
                   <div className="stat">
-                    <span className="count">{trip.selected_locations_count || 0}</span>
+                    <span className="count">{(trip.selectedLocations && trip.selectedLocations.length) || trip.selected_locations_count || 0}</span>
                     <span className="label">Locations</span>
                   </div>
                   <div className="stat">
