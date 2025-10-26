@@ -837,6 +837,20 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Also ensure connector shows downward arrow for slightly larger mobile widths up to 900px */
+@media (max-width: 900px) {
+  .step-connector {
+    color: transparent !important;
+  }
+  .step-connector::after {
+    content: '↓';
+    color: #cbd5e0;
+    display: inline-block;
+    font-size: 2rem;
+    line-height: 1;
+  }
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 10px;
