@@ -301,27 +301,6 @@ export default function GILocationsList({ onNavigate, setSelectedLocation }) {
                     alt={location.name || 'location image'}
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
-                  {/* Badge overlay */}
-                  {isSellable && (
-                    <span
-                      role="status"
-                      aria-label={badgeText}
-                      style={{
-                        position: 'absolute',
-                        top: 16,
-                        right: 16,
-                        background: badgeBg || '#94a3b8',
-                        color: '#fff',
-                        borderRadius: 999,
-                        padding: '8px 16px',
-                        fontWeight: 700,
-                        fontSize: 14,
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                      }}
-                    >
-                      {badgeText}
-                    </span>
-                  )}
                 </div>
 
                 {/* Content */}
@@ -330,8 +309,18 @@ export default function GILocationsList({ onNavigate, setSelectedLocation }) {
                     {location.name}
                   </h3>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#000', fontWeight: 600, fontSize: '0.85rem' }}>
-                    {location.district || '—'}
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, color: '#000', fontWeight: 600, fontSize: '0.85rem' }}>
+                    <span className="district-label">{location.district || '—'}</span>
+                    {isSellable && (
+                      <span
+                        role="status"
+                        aria-label={badgeText}
+                        className={`badge ${isSellable ? 'badge--success' : 'badge--secondary'}`}
+                        style={{ background: badgeBg || undefined, color: badgeBg ? '#fff' : undefined }}
+                      >
+                        {badgeText}
+                      </span>
+                    )}
                   </div>
 
                   {/* Buy button moved to footer next to map */}

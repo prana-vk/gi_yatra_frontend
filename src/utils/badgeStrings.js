@@ -2,7 +2,8 @@
 
 export const BADGE_STRINGS = {
   notForSale: 'Not for sale',
-  available: (qty) => `${qty} available`,
+  // use a non-breaking space so the count and label stay on one line
+  available: (qty) => `${qty}\u00A0available`,
 };
 
 export function getBadgeText(sellable_quantity) {

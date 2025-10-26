@@ -231,6 +231,36 @@
   font-size: 0.95rem;
 }
 
+/* Ensure badge next to district aligns nicely */
+.location-content .district-label {
+  display: inline-block;
+  /* allow wrapping for long district names, but keep normal line-height */
+  line-height: 1.1;
+  vertical-align: top;
+}
+.location-content .badge {
+  margin-left: 6px;
+  font-size: 0.85rem;
+  /* keep badge inline but align to the top of the district text so it sits next to the first line */
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  padding: 0 0.7rem;
+  box-sizing: border-box;
+  margin-top: 2px; /* small nudge so badge visually aligns with text baseline */
+}
+
+/* Force badge text to a single line; ellipsize as fallback */
+.location-content .badge {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 56px; /* ensures small numeric badges don't look cramped; adjust if needed */
+  max-width: 160px; /* prevent overly long labels from expanding the card too much */
+  font-size: 0.82rem; /* slightly smaller so two-word labels fit more easily */
+  padding: 0 0.85rem;
+}
+
 .location-content .description {
   color: #4a5568;
   line-height: 1.6;
