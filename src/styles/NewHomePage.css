@@ -407,6 +407,21 @@
   margin: 0 auto;
 }
 
+/* Mobile: stack featured location cards and show a maximum of 4 */
+@media (max-width: 900px) {
+  .locations-carousel {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0 12px;
+  }
+  /* Hide any featured cards after the fourth on mobile */
+  .locations-carousel .location-card:nth-child(n+5) {
+    display: none;
+  }
+  .location-card { border-radius: 12px; }
+}
+
+
 .location-card {
   background: #fff;
   border-radius: 14px;
