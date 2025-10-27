@@ -71,3 +71,12 @@
 .chat-frame-viewport { width: 100%; height: 100%; overflow: auto; position: relative; }
 .chat-iframe-wrap { position: absolute; top: 0; left: 0; will-change: transform; }
 
+/* hide native scrollbars where possible (applies to elements in this document)
+  Note: for cross-origin iframe content these rules won't affect the iframe's internal scrollbars. */
+.chat-frame-viewport::-webkit-scrollbar { display: none; }
+.chat-frame-viewport { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* parent pinned bottom bar inside the chat panel */
+/* parent pinned bottom bar removed per user request */
+/* touch blocker removed - allow touch scrolling */
+
