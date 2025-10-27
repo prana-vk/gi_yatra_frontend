@@ -1,0 +1,73 @@
+.chat-toggle {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 2200;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(180deg,#ff7a18,#ff4e50);
+  color: #fff;
+  border: none;
+  box-shadow: 0 8px 24px rgba(15,23,42,0.18);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.chat-panel {
+  position: fixed;
+  right: 20px;
+  bottom: 90px;
+  z-index: 2200;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(2,6,23,0.18);
+  transform-origin: bottom right;
+  transform: scale(0.98);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .18s ease, opacity .18s ease;
+}
+
+.chat-panel.open {
+  transform: scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.chat-panel iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+.chat-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.06);
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .chat-panel.mobile {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    bottom: 0;
+  }
+  .chat-toggle { right: 16px; bottom: 16px; }
+}
+
+/* bottom input bar */
+.chat-frame-viewport { width: 100%; height: 100%; overflow: auto; position: relative; }
+.chat-iframe-wrap { position: absolute; top: 0; left: 0; will-change: transform; }
+

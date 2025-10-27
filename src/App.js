@@ -12,6 +12,7 @@ import AppErrorBoundary from './components/AppErrorBoundary';
 import { GILocationsProvider } from './context/GILocationsContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './styles/App.css';
+import ChatWidget from './components/ChatWidget';
 
 function AppContent() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -128,6 +129,9 @@ function AppContent() {
             </div>
           </div>
       </div>
+
+  {/* Chat widget (external bot) */}
+  <ChatWidget src="https://gi-chatbot-o8kn.onrender.com/" />
 
       {/* Footer */}
       <footer className="app-footer">
